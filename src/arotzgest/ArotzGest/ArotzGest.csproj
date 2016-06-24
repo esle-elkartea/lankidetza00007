@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4EE9AD00-3D43-4083-8396-EF46FFAF9FAD}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>ArotzGest</RootNamespace>
+    <AssemblyName>ArotzGest</AssemblyName>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ItemGroup>
+    <Reference Include="ArotzPrint, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\ArotzPrint.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AccountDetailTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="AccountentryDetailTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="AccountEntrySearchTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="AccountSearchTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ArbitraryConceptForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ArotzGest.cs" />
+    <Compile Include="BalanceDetailTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="BudgetConceptForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BudgetDetailTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="BudgetSearchTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ClientDetailTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ClientSearchTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CompanyDetailTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Data.cs" />
+    <Compile Include="Database.cs" />
+    <Compile Include="EmployeeDetailTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="EmployeeSearchTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="EmployeeCategoryDetailTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="EmployeeCategorySearchTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="EmployeeCategoryConceptForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HomeTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Interface.cs" />
+    <Compile Include="InvoiceDetailTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="InvoiceSearchTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MaterialConceptForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MaterialDetailTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MaterialSearchTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MaterialCategoryDetailTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MaterialCategorySearchTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProviderDetailTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProviderSearchTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReceiptConceptForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TemplateConceptForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TemplateDetailTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TemplateSearchTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TemplateCategoryDetailTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TemplateCategorySearchTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+  <PropertyGroup>
+    <PostBuildEvent>if not exist ArotzGest.mbd xcopy ..\..\ArotzGest.mdb
+if not exist res xcopy ..\..\res\*.* res\
+dir
+</PostBuildEvent>
+  </PropertyGroup>
+</Project>
