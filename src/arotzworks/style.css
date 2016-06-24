@@ -1,0 +1,526 @@
+body {
+	font-family:Tahoma,Verdana,Sans;
+	-moz-box-sizing:border-box;	
+	margin:0px;
+}
+
+div,td,table {
+	-moz-box-sizing:border-box;
+}
+
+#header {
+	background:url(logo.png);
+	background-repeat:no-repeat;
+	width:100%;
+	height:88px;
+	border-bottom:solid 3px rgb(155,100,55);
+	background-color:white;
+}
+
+#menu {
+	width:20%;
+	height:500px;
+	background:rgb(0,100,155);
+	padding:16px;
+}
+        
+#menu button {
+	width:100%;
+	color:white;
+	background:#ff8800;
+	border:outset 1px;
+	padding:2px;
+	margin:6px;	
+}
+
+#main {
+	width:80%;
+	padding:12px;                                                                   	
+}             
+    
+a { text-decoration:none; color:#ff8800}
+a img { border:none; }
+h1{ margin:0px;font-weight:normal;font-size:24px;border-bottom:solid 1px;width:100%;}
+
+input { border:inset 1px;padding:4px;font-size:12px; }
+
+.form{
+    width:99%;
+	border:solid 1px;
+	border-color:rgb(118, 125, 117);
+	border-spacing:0px;
+}
+
+.form_separator {
+	padding:2px;
+	font-weight:bold;
+	font-size:11px;
+	background:rgb(120,120,120);
+	color:rgb(255,255,255);
+	border-color:rgb(0,50,150);
+}
+
+.form_row_caption {
+	font-size:11px;
+	color:rgb(100,100,100);
+	font-weight:bold;
+	padding:2px;
+	border-right:solid 1px;
+	border-color:rgb(118,127,117);
+	width:170px;
+	padding-left:5px;
+}
+
+.form_row_odd {
+	background:rgb(255,255,255);
+}
+
+.form_row_even {
+	background:rgb(225,225,225);
+}
+
+.form_row_even .form_row_field input{
+	background:rgb(235,235,235);
+	border-color:rgb(155,155,155);
+	color:rgb(60,60,60);
+}
+
+.form_row_odd .form_row_field input{
+	color:rgb(60,60,60);
+	border-color:rgb(155,155,155);
+}
+
+.form_row_even .form_row_field textarea{
+	background:rgb(235,235,235);
+	border-color:rgb(155,155,155);
+	color:rgb(60,60,60);
+	font-size:11px;
+	height:50px;
+	font-family:Tahoma;
+	padding:4px;
+}
+
+.form_row_odd .form_row_field textarea{
+	color:rgb(60,60,60);
+	border-color:rgb(155,155,155);
+	font-size:11px;
+	height:50px;
+	font-family:Tahoma;
+}
+
+.form_row_field {
+       font-size:11px;
+       padding:2px;
+       padding-left:5px;
+}
+
+.form_row_field button{ 
+	border:none;
+	background:rgb(255,255,255);
+}
+
+
+.form_row_field textarea{ 
+	width:100%;
+}
+
+.form_row_field div {
+	width:350px;
+	text-align:justify;
+}
+
+.form_caption{
+	font-size:11px;
+	color:rgb(118,125,117);
+}
+
+.toolbar_body {
+	background:rgb(235,225,205);
+	padding:2px;
+	height:44px;
+	width:100%;
+	overflow:hidden;
+	border:solid 1px;
+	
+}
+
+.toolbar_element {
+	float:left;
+	padding:2px;
+	height:24px;
+}
+
+.toolbar_element button {
+	 border: outset 1px; font-size:12px;padding:5px;padding-left:8px;padding-right:8px;
+}
+
+
+.toolbar_element button img {
+	float:top;
+    vertical-align:middle;
+	margin-bottom:2px;
+}
+
+DataGrid Widget (default css classes)
+------------------------------------------------------------------
+*/
+
+.datagrid_table {
+    border-spacing:0px;
+    border:inset 1px;
+    width:100%;
+    background:white;
+}
+table.datagrid_options {
+    padding:1px;
+    border:inset 1px;
+    border-spacing:0px;
+    background:rgb(255,255,255);
+    width:100%;
+    margin-top:5px;
+    background:rgb(232,232,235);
+}
+td.datagrid_options {
+    padding:2px;
+    padding-left:12px;
+    font-size:9px;
+    height:9px;
+}
+
+.datagrid_options button{
+	font-size:10px;
+	background:rgb(220,220,222);
+	color:rgb(55,55,55);
+	font-weight:bold;
+	-moz-border-radius:0px;
+}
+
+.datagrid_options select {
+	font-size:9px;
+	margin-left:5px;
+	
+}
+.datagrid_options input {
+	font-size:9px;
+	margin-left:5px;
+}
+.datagrid_options input[type="submit"] {
+	font-size:8px;
+	height:20px;
+	margin-top:2px;
+	margin-left:5px;
+}
+
+.datagrid_options button img{
+        vertical-align:bottom;
+}
+
+
+.datagrid_row_mouseout {
+        background:rgb(255,255,255);
+        color:red;
+}
+
+.datagrid_row_mouseout_odd {
+        background:rgb(255,255,255);
+        
+}
+
+.datagrid_row_mouseout_even {
+        background:rgb(245,245,245);
+        
+}
+
+
+.datagrid_row_mouseover{
+        background:rgb(220,205,185);
+        cursor:pointer;
+}
+.datagrid_row_mouseover td {
+        color:black;        
+}
+.datagrid_row_mouseover td  a{
+        color:black;
+}
+.datagrid_widget { margin-bottom:6px; width:100%; }
+
+.datagrid_header {
+        border:outset 1px;
+        padding:4px;
+        background:rgb(233,233,233);
+        font-weight:bold;       
+        font-size:11px;
+        
+        
+}
+
+.datagrid_header:first-letter{
+		text-transform:uppercase;
+	}
+
+.datagrid_header a {
+		color:black;
+		text-decoration:none;
+}
+.sortable {
+	 border-spacing:0px;
+        border:inset 1px;
+        width:100%;
+	
+}
+.datagrid_field {
+        padding:3px;
+        border-bottom:solid 1px;
+        border-bottom-color:rgb(160,160,160);
+        font-size:11px;
+        
+}
+
+/* 
+Box Widget (default css classes)
+------------------------------------------------------
+*/
+
+/* Login Box */
+.login {
+        width:360px;
+        border:solid 1px;
+}
+
+/*
+print_arr() 
+----------------------------------------------------
+*/
+
+.print_arr {
+        border-left:solid 1px;
+        border-top:solid 1px;
+        border-spacing:0px;
+}
+.print_arr_field {
+        border-bottom:solid 1px;
+        border-right:solid 1px;
+        background:rgb(235,235,235);
+}
+.print_arr_value {
+        border-bottom:solid 1px;
+        border-right:solid 1px;
+        background:rgb(245,245,245);
+}
+
+/*
+Debug widget
+-------------------------------------------------------
+*/
+
+.debug {
+        border-left:solid 1px;
+        border-top:solid 1px;
+        border-spacing:0px;
+}
+.debug_header {
+        border-bottom:outset 1px;
+        border-right:outset 1px;
+        background:rgb(235,235,235);
+        font-size:11px;
+        font-weight:bold;
+        padding:4px;
+}
+.debug_object {
+        border-bottom:solid 1px;
+        border-right:solid 1px;
+        background:rgb(225,225,225);
+        border-bottom-color:rgb(180,180,180);
+}
+.debug_message {
+        padding:3px;
+        border-bottom:solid 1px;
+        border-right:solid 1px;
+        background:rgb(245,245,245);
+        border-bottom-color:rgb(180,180,180);
+}
+
+/* Progress Bar */
+
+.progress_container {
+        border:inset 1px;
+        background:rgb(245,245,255);
+}
+.progress_bar {
+        border:outset 1px;
+        background:rgb(0,100,255);
+}
+
+
+/* Dataform */
+td.dataform select {
+        width:100%;
+}
+td.dataform_title {
+       font-size:9px;
+       text-align:right;
+       padding:4px;
+       font-weight:normal;
+       text-transform:uppercase;
+}
+td.dataform {
+        padding:4px;
+        
+}
+.dataform_error{
+	border:solid 2px;
+	border-color:rgb(255,0,0);
+}
+
+
+.box_box{
+        width:100%;
+        border:solid 1px;
+        padding:0px;
+		
+}
+.box_widget {
+		padding:6px;
+}
+.box_title {
+     	background-color:rgb(110,110,110);
+	    color:rgb(255,255,255);
+		font-size:10px;
+	    padding:4px;
+	    border:outset 1px;
+	    font-weight:bold;
+}
+.box_content {
+        overflow:auto;
+        padding:6px;
+        background:rgb(239,237,222);
+}
+.puertas_paso {
+	border: solid 1px;
+	width:100%;
+	font-size:11px;
+	border-spacing:0px;
+}
+
+.puertas_paso thead td {
+	border:outset 1px;
+	padding:4px;
+	text-align:center;
+	font-weight:bold;
+	background:rgb(230,230,230);
+	text-transform:uppercase;
+}
+
+.puertas_paso thead tr:first-child td {
+	font-size:14px;
+	text-transform:uppercase;
+}
+
+.puertas_paso tbody td{
+	border-right:solid 1px;
+	border-bottom:solid 1px;
+	
+}
+
+.puertas_paso tbody tr{
+	background:white;
+}
+
+.puertas_paso thead tr.inputs{
+	background:rgb(155,255,155);
+	
+}
+
+.puertas_paso thead tr.inputs td {
+	background:rgb(155,255,155);
+	text-align:center;
+	align:center;
+}
+
+.puertas_paso thead tr.inputs input[type="text"] {
+	border:none;
+	width:100%;
+	background:rgb(155,255,155);
+}
+
+.puertas_paso thead tr.inputs input:focus{
+	border:none;
+	background:rgb(255,255,0);
+}
+
+.puertas_entrada {
+	border: solid 1px;
+	width:100%;
+	font-size:11px;
+	border-spacing:0px;
+}
+
+.puertas_entrada thead td {
+	border:outset 1px;
+	padding:4px;
+	text-align:center;
+	font-weight:bold;
+	background:rgb(230,230,230);
+	text-transform:uppercase;
+}
+
+.puertas_entrada thead tr:first-child td {
+	font-size:14px;
+	text-transform:uppercase;
+}
+
+.puertas_entrada tbody td{
+	border-right:solid 1px;
+	border-bottom:solid 1px;
+	
+}
+
+.puertas_entrada tbody tr{
+	background:white;
+}
+
+.puertas_entrada thead tr.inputs{
+	background:rgb(155,255,155);
+	
+}
+
+.puertas_entrada thead tr.inputs td {
+	background:rgb(155,255,155);
+	text-align:center;
+	align:center;
+}
+
+.puertas_entrada thead tr.inputs input[type="text"] {
+	border:none;
+	width:100%;
+	background:rgb(155,255,155);
+}
+
+.puertas_entrada thead tr.inputs input:focus{
+	border:none;
+	background:rgb(255,255,0);
+}
+button, input[type='submit'] { border: outset 1px; font-size:12px;padding:5px;padding-left:8px;padding-right:8px;}
+button img { vertical-align:middle; margin-top:-3px;}
+
+h1 { -moz-box-sizing:border-box;padding:8px;background:rgb(240,240,210);font-size:18px;font-weight:bold;}
+
+.eventos {
+	width:100%;
+	border-spacing:0px;
+	
+}
+
+.eventos thead td{
+	border:outset 1px;
+	padding:4px;
+	background:rgb(240,240,210);
+}
+
+.eventos td{
+	border-bottom:solid 1px #bbbbbb;
+	padding:2px;
+	vertical-align:top;
+}
+
+

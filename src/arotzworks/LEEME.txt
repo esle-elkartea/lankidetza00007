@@ -1,0 +1,75 @@
+Leeme de ArotzWorks 1.0
+
+0.0 Notas Legales ------------------------------------------------------------
+
+(c) 2007 Webalianza T.I. S.L.
+Development sponsored and started by
+
+Project Lead		: Luis Martin-Santos Garcia <luis@webalianza.com>
+Project Customer	: Nekane Amondarain <nekane@arotzgi.net>
+Funding				: SPRI S.A. , KZ Lankidetza
+					  Basque Government
+
+ArotzWorks is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+ArotzWorks is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with ArotzWorks; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ArotzWorks hace uso de la librería ooCommon NG desarrollada por
+Webalianza. para más información ver el directorio oocommon/
+
+1.0 Introducción ----------------------------------------------------------
+
+Arotzworks es un sistema de seguimiento de fabricación de pedidos para el
+sector de la madera . Dada su naturaleza de trabajo, Arotzworks ha sido
+desarrollado como una aplicación web, por lo tanto esta será ejecutada en 
+un servidor web y visualizada desde un navegador Web.
+
+ArotzWorks 1.0 contiene las siguientes funcionalidades:
+
+* Creación de pedidos y gestión de pedidos.
+* Supervisión del estado de cada pedido por parte de oficina, taller y almacen
+* Tracking del estado del pedido por parte del cliente a través de número de
+  referencia de pedido.
+* Sistema AJAX para la imputación de los parámetros de puertas y ventanas.
+
+2.0 Instalación y Requisitos ----------------------------------------------
+
+ArotzWorks está desarrollado para la plataforma LAMP. Los componentes actualmente
+soportados son los siguientes:
+
+Servidor:
+    * Apache 2.0 o superior
+    * PHP 4.3.x (no soporta PHP5)
+    * MySQL 4.0+
+    
+Cliente:
+    * Navegador Compatible con Estándares (ej. Mozilla Firefox, Camino, Konqueror, Safari)
+         NOTA: Internet Explorer, en cualquiera de sus versiones NO está soportado, al no
+         cumplir varios estándares utilizados en esta plataforma y no ser posible su
+         adaptación para el caso al tratarse de Software de Código Cerrado.
+         
+         
+2.1 Instalación
+
+   1) Cree la base de datos "arotzworks" en su servidor de bases de datos mysql
+   con el schema SQL "arotzworks.sql" que se adjunta en este paquete.
+   
+   2) Copie el contenido del paquete a una zona accesible por Apache. Asegurese
+   de que dicha copia de Apache se encuentra ejecutando PHP 4.3.x
+   
+   3) Configure el fichero oocommon/settings.php para que refleje la configuración
+   de MySQL de su máquina.
+   
+   4) Acceda al sistema y compruebe que todas las páginas funcionan sin errores.          
+             
+    

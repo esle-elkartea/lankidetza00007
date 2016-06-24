@@ -1,0 +1,284 @@
+<table class="puertas_paso" id="ventana_ts">
+	<thead>
+		<tr>
+		<td colspan="18">
+		Ventanas
+		</td>
+		</tr>
+		<tr>
+			<td colspan="2" style="text-align:center">
+			Unids.
+			</td>
+			<td rowspan="2" style="text-align:center">
+			Madera
+			</td>
+			<td colspan="4" style="text-align:center">
+			Ventana
+			</td>
+			<td colspan="3" style="text-align:center">
+			Jamba
+			</td>
+			<td colspan="2" style="text-align:center">
+			Herraje
+			</td>
+			<td colspan="3" style="text-align:center">
+			Cristal
+			</td>
+			<td colspan="2" style="text-align:center">
+			Material
+			</td>
+			<td rowspan="2" style="text-align:center">
+			Acc.
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Uds.
+			</td>
+			<td>
+			Hojas
+			</td>
+			<td>
+			Modelo
+			</td>
+			<td>
+			Largo
+			</td>
+			<td>
+			Ancho
+			</td>
+			<td>
+			Grueso
+			</td>
+			<td>
+			DM
+			</td>
+			<td>
+			Macizo
+			</td>
+			<td>
+			Medidas
+			</td>
+			<td>
+			Oscilante
+			</td>
+			<td>
+			Batiente
+			</td>
+			<td>
+			Mate
+			</td>
+			<td>
+			carGlass
+			</td>
+			<td>
+			Grueso
+			</td>
+			<td>
+			Inox.
+			</td>
+			<td>
+			Laton
+			</td>
+		</tr>			
+	</thead>
+	<tbody />
+	</table>
+
+<script>
+
+
+function getXmlHttpRequestObject() {
+			if (window.XMLHttpRequest) {
+				return new XMLHttpRequest(); //Not IE
+			} else if(window.ActiveXObject) {
+				return new ActiveXObject("Microsoft.XMLHTTP"); //IE
+			} else {
+				alert("Su navegador no soporta interacci&oacute;n mediante Ajax.");
+			}
+}                    
+
+function loadventanaModelos()
+{      
+	var receiveReq= getXmlHttpRequestObject();
+	if (receiveReq.readyState== 4 || receiveReq.readyState== 0) {
+		receiveReq.open("GET", 'ajax.php?entity=modelos&condition_entity=1&condition_value=1', true);
+		receiveReq.onreadystatechange= function() { handleventanaModelos(receiveReq); };
+		receiveReq.send(null);
+	}
+}                                                             
+
+function handleventanaModelos(receiveReq)
+{     
+	if (receiveReq.readyState== 4) 
+	{
+		xml= receiveReq.responseXML.documentElement;
+		xml= xml.getElementsByTagName('result');     
+		table= document.getElementById('ventana_idmodelo');
+		while (table.childNodes.length > 0)
+			table.removeChild(table.childNodes[0]);
+		option= document.createElement('option'); 
+		option.innerHTML='[Modelo]';
+		document.getElementById('ventana_idmodelo').appendChild(option);							
+		for (i=0;i<xml.length;i++)
+		{
+			option= document.createElement('option');
+			option.innerHTML= xml[i].getAttribute('name');
+			option.value= xml[i].getAttribute('id');
+			document.getElementById('ventana_idmodelo').appendChild(option);
+		}                                             
+	}
+}
+
+function loadventanaMaderas()
+{      
+	var receiveReq= getXmlHttpRequestObject();
+	if (receiveReq.readyState== 4 || receiveReq.readyState== 0) {
+		receiveReq.open("GET", 'ajax.php?entity=maderas&condition_entity=1&condition_value=1', true);
+		receiveReq.onreadystatechange= function() { handleventanaMaderas(receiveReq); };
+		receiveReq.send(null);
+	}
+}                                                             
+
+function handleventanaMaderas(receiveReq)
+{     
+	if (receiveReq.readyState== 4) 
+	{
+		xml= receiveReq.responseXML.documentElement;
+		xml= xml.getElementsByTagName('result');     
+		table= document.getElementById('ventana_idmadera');
+		while (table.childNodes.length > 0)
+			table.removeChild(table.childNodes[0]);
+		option= document.createElement('option'); 
+		option.innerHTML='[Madera]';
+		document.getElementById('ventana_idmadera').appendChild(option);							
+		for (i=0;i<xml.length;i++)
+		{
+			option= document.createElement('option');
+			option.innerHTML= xml[i].getAttribute('name');
+			option.value= xml[i].getAttribute('id');
+			document.getElementById('ventana_idmadera').appendChild(option);
+		}                                             
+	}
+}
+
+function ventanaReload()
+{
+var receiveReq= getXmlHttpRequestObject();   
+if (receiveReq.readyState== 4 || receiveReq.readyState== 0) {
+		receiveReq.open("GET", 'ajax_ventana_list.php?pedido_id='+idpedido, true);
+		receiveReq.onreadystatechange= function() { handleventanaReload(receiveReq); };
+		receiveReq.send(null);
+	}
+}
+
+
+
+function handleventanaReload(r)
+{
+	  var totalhoras=0;
+	  if (r.readyState== 4) {    
+			if (r.responseText != '')
+			{              
+				ts= document.getElementById('ventana_ts');
+				while (ts.tBodies[0].childNodes.length > 0)
+					ts.tBodies[0].removeChild(ts.tBodies[0].childNodes[0]);
+				xml= r.responseXML.documentElement;
+				xml= xml.getElementsByTagName('ventana');
+				tbody= ts.tBodies[0];
+				
+				for (i=0;i<xml.length;i++)
+				{
+					x= xml[i];
+					tr= document.createElement("tr");
+					ap(tr,cn(ga(x,'unidades')));
+					ap(tr,cn(ga(x,'hojas')));
+					ap(tr,cn(ga(x,'madera')));
+					ap(tr,cn(ga(x,'modelo')));
+					ap(tr,cn(ga(x,'ventana_largo')+" cm."));
+					ap(tr,cn(ga(x,'ventana_ancho')+" cm."));
+					ap(tr,cn(ga(x,'ventana_grueso')+" cm."));
+					ap(tr,cnt(ga(x,'jamba_dm')));
+					ap(tr,cnt(ga(x,'jamba_macizo')));
+					ap(tr,cn(ga(x,'jamba_medidas')));
+					ap(tr,cnt(ga(x,'oscilante')));
+					ap(tr,cnt(ga(x,'batiente')));
+					ap(tr,cnt(ga(x,'cristal_mate')));
+					ap(tr,cnt(ga(x,'cristal_carglass')));
+					ap(tr,cn(ga(x,'cristal_grueso')));
+					ap(tr,cnt(ga(x,'material_inox')));
+					ap(tr,cnt(ga(x,'material_laton')));
+					but= document.createElement("button");
+					but.style.background= 'none';
+					but.style.border= 'none';
+					but.id= ga(x,'id');
+					but.innerHTML= "<img src=\"icons/16x16/cancel.png\" />";
+					but.onclick= function () { deleteventana(this.id); }
+					ap(tr,cno(but));
+					ap(tbody,tr);
+				}
+				
+			}
+		}	
+}
+
+function deleteventana(id)
+{
+	var receiveReq= getXmlHttpRequestObject();   
+	if (receiveReq.readyState== 4 || receiveReq.readyState== 0) {
+		receiveReq.open("GET", 'ajax_ventana_delete.php?id='+id, true);
+		receiveReq.onreadystatechange= function() { handleventanadelete(receiveReq); };
+		receiveReq.send(null);
+	}
+}
+
+function handleventanadelete(r)
+{
+	if (r.readyState== 4) {    
+		ventanaReload();
+	}
+}
+
+function addventana()
+{
+	var unidades= gv('ventana_unidades');
+	var idmodelo= gsv('ventana_idmodelo');
+	var idmadera= gsv('ventana_idmadera');
+	var hojas = gv('ventana_hojas');
+	var ventana_largo= gv('ventana_ventana_largo'); 
+	var ventana_ancho= gv('ventana_ventana_ancho'); 
+	var ventana_grueso= gv('ventana_ventana_grueso'); 
+	var jamba_dm= gvr('ventana_jamba_dm');
+	var jamba_macizo= gvr('ventana_jamba_macizo');
+	var jamba_medidas= gv('ventana_jamba_medidas');
+	var cristal_mate = gvr('ventana_cristal_mate');
+	var cristal_carglass = gvr('ventana_cristal_carglass');
+	var cristal_grueso = gv('ventana_cristal_grueso');
+	var oscilante = gvr('ventana_oscilante');
+	var batiente = gvr('ventana_batiente');
+	var material_inox= gvr('ventana_material_inox');
+	var material_laton= gvr('ventana_material_laton');
+	
+	var receiveReq= getXmlHttpRequestObject();   
+	if (receiveReq.readyState== 4 || receiveReq.readyState== 0) {
+		receiveReq.open("GET", 'ajax_ventana_add.php?hojas='+hojas+'&idpedido='+idpedido+'&unidades='+unidades+'&idmodelo='+idmodelo+'&idmadera='+idmadera+'&ventana_largo='+ventana_largo+'&ventana_ancho='+ventana_ancho+'&ventana_grueso='+ventana_grueso+'&jamba_dm='+jamba_dm+'&jamba_macizo='+jamba_macizo+'&jamba_medidas='+jamba_medidas+'&cristal_mate='+cristal_mate+'&cristal_carglass='+cristal_carglass+'&cristal=1&cristal_grueso='+cristal_grueso+'&oscilante='+oscilante+'&batiente='+batiente+'&material_inox='+material_inox+'&material_laton='+material_laton, true);
+		receiveReq.onreadystatechange= function() { handleventanaAdd(receiveReq); };
+		receiveReq.send(null);
+	}
+	
+	
+	
+}
+function handleventanaAdd(r)
+{
+	if (r.readyState== 4) {    
+		ventanaReload();
+		document.getElementById('ventana_unidades').focus();
+	}
+}
+
+loadventanaModelos();
+loadventanaMaderas();
+ventanaReload();
+
+</script>

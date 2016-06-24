@@ -1,0 +1,289 @@
+<table class="puertas_paso" id="paso_ts">
+	<thead>
+		<tr>
+		<td colspan="19">
+		Puertas de Paso
+		</td>
+		</tr>
+		<tr>
+			<td rowspan="2" style="text-align:center">
+			Unids.
+			</td>
+			<td rowspan="2" style="text-align:center">
+			Madera
+			</td>
+			<td colspan="4" style="text-align:center">
+			Puerta
+			</td>
+			<td colspan="3" style="text-align:center">
+			Regrueso
+			</td>
+			<td colspan="3" style="text-align:center">
+			Jamba
+			</td>
+			<td colspan="2" style="text-align:center">
+			Mano
+			</td>
+			<td colspan="2" style="text-align:center">
+			Condena
+			</td>
+			<td colspan="2" style="text-align:center">
+			Material
+			</td>
+			<td rowspan="2" style="text-align:center">
+			Acc.
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Modelo
+			</td>
+			<td>
+			Largo
+			</td>
+			<td>
+			Ancho
+			</td>
+			<td>
+			Grueso
+			</td>
+			<td>
+			DM
+			</td>
+			<td>
+			Macizo
+			</td>
+			<td>
+			Medidas
+			</td>
+			<td>
+			DM
+			</td>
+			<td>
+			Macizo
+			</td>
+			<td>
+			Medidas
+			</td>
+			<td>
+			Izda.
+			</td>
+			<td>
+			Dcha.
+			</td>
+			<td>
+			Si
+			</td>
+			<td>
+			No
+			</td>
+			<td>
+			Inox.
+			</td>
+			<td>
+			Laton
+			</td>
+		</tr>			
+	</thead>
+	<tbody />
+	</table>
+
+<script>
+
+
+
+function getXmlHttpRequestObject() {
+			if (window.XMLHttpRequest) {
+				return new XMLHttpRequest(); //Not IE
+			} else if(window.ActiveXObject) {
+				return new ActiveXObject("Microsoft.XMLHTTP"); //IE
+			} else {
+				alert("Su navegador no soporta interacci&oacute;n mediante Ajax.");
+			}
+}                    
+
+function loadPasoModelos()
+{      
+	var receiveReq= getXmlHttpRequestObject();
+	if (receiveReq.readyState== 4 || receiveReq.readyState== 0) {
+		receiveReq.open("GET", 'ajax.php?entity=modelos&condition_entity=1&condition_value=1', true);
+		receiveReq.onreadystatechange= function() { handlePasoModelos(receiveReq); };
+		receiveReq.send(null);
+	}
+}                                                             
+
+function handlePasoModelos(receiveReq)
+{     
+	if (receiveReq.readyState== 4) 
+	{
+		xml= receiveReq.responseXML.documentElement;
+		xml= xml.getElementsByTagName('result');     
+		table= document.getElementById('paso_idmodelo');
+		while (table.childNodes.length > 0)
+			table.removeChild(table.childNodes[0]);
+		option= document.createElement('option'); 
+		option.innerHTML='[Modelo]';
+		document.getElementById('paso_idmodelo').appendChild(option);							
+		for (i=0;i<xml.length;i++)
+		{
+			option= document.createElement('option');
+			option.innerHTML= xml[i].getAttribute('name');
+			option.value= xml[i].getAttribute('id');
+			document.getElementById('paso_idmodelo').appendChild(option);
+		}                                             
+	}
+}
+
+function loadPasoMaderas()
+{      
+	var receiveReq= getXmlHttpRequestObject();
+	if (receiveReq.readyState== 4 || receiveReq.readyState== 0) {
+		receiveReq.open("GET", 'ajax.php?entity=maderas&condition_entity=1&condition_value=1', true);
+		receiveReq.onreadystatechange= function() { handlePasoMaderas(receiveReq); };
+		receiveReq.send(null);
+	}
+}                                                             
+
+function handlePasoMaderas(receiveReq)
+{     
+	if (receiveReq.readyState== 4) 
+	{
+		xml= receiveReq.responseXML.documentElement;
+		xml= xml.getElementsByTagName('result');     
+		table= document.getElementById('paso_idmadera');
+		while (table.childNodes.length > 0)
+			table.removeChild(table.childNodes[0]);
+		option= document.createElement('option'); 
+		option.innerHTML='[Madera]';
+		document.getElementById('paso_idmadera').appendChild(option);							
+		for (i=0;i<xml.length;i++)
+		{
+			option= document.createElement('option');
+			option.innerHTML= xml[i].getAttribute('name');
+			option.value= xml[i].getAttribute('id');
+			document.getElementById('paso_idmadera').appendChild(option);
+		}                                             
+	}
+}
+
+function pasoReload()
+{
+var receiveReq= getXmlHttpRequestObject();   
+if (receiveReq.readyState== 4 || receiveReq.readyState== 0) {
+		receiveReq.open("GET", 'ajax_puertas_paso_list.php?pedido_id='+idpedido, true);
+		receiveReq.onreadystatechange= function() { handlePasoReload(receiveReq); };
+		receiveReq.send(null);
+	}
+}
+
+
+
+function handlePasoReload(r)
+{
+	  var totalhoras=0;
+	  if (r.readyState== 4) {    
+			if (r.responseText != '')
+			{              
+				ts= document.getElementById('paso_ts');
+				while (ts.tBodies[0].childNodes.length > 0)
+					ts.tBodies[0].removeChild(ts.tBodies[0].childNodes[0]);
+				xml= r.responseXML.documentElement;
+				xml= xml.getElementsByTagName('puerta_paso');
+				tbody= ts.tBodies[0];
+				
+				for (i=0;i<xml.length;i++)
+				{
+					x= xml[i];
+					tr= document.createElement("tr");
+					ap(tr,cn(ga(x,'unidades')));
+					ap(tr,cn(ga(x,'madera')));
+					ap(tr,cn(ga(x,'modelo')));
+					ap(tr,cn(ga(x,'puerta_largo')+" cm."));
+					ap(tr,cn(ga(x,'puerta_ancho')+" cm."));
+					ap(tr,cn(ga(x,'puerta_grueso')+" cm."));
+					ap(tr,cnt(ga(x,'regrueso_dm')));
+					ap(tr,cnt(ga(x,'regrueso_macizo')));
+					ap(tr,cn(ga(x,'regrueso_medidas')));
+					ap(tr,cnt(ga(x,'jamba_dm')));
+					ap(tr,cnt(ga(x,'jamba_macizo')));
+					ap(tr,cn(ga(x,'jamba_medidas')));
+					ap(tr,cnt(ga(x,'mano_izq')));
+					ap(tr,cnt(ga(x,'mano_dch')));
+					ap(tr,cnt(ga(x,'condena')));
+					ap(tr,cnt(ga(x,'condena') == 0 ? "1" : "0"));
+					ap(tr,cnt(ga(x,'material_inox')));
+					ap(tr,cnt(ga(x,'material_laton')));
+					but= document.createElement("button");
+					but.style.background= 'none';
+					but.style.border= 'none';
+					but.id= ga(x,'id');
+					but.innerHTML= "<img src=\"icons/16x16/cancel.png\" />";
+					but.onclick= function () { deletePaso(this.id); }
+					ap(tr,cno(but));
+					ap(tbody,tr);
+				}
+				
+			}
+		}	
+}
+
+function deletePaso(id)
+{
+	var receiveReq= getXmlHttpRequestObject();   
+	if (receiveReq.readyState== 4 || receiveReq.readyState== 0) {
+		receiveReq.open("GET", 'ajax_puertas_paso_delete.php?id='+id, true);
+		receiveReq.onreadystatechange= function() { handlePasodelete(receiveReq); };
+		receiveReq.send(null);
+	}
+}
+
+function handlePasodelete(r)
+{
+	if (r.readyState== 4) {    
+		pasoReload();
+	}
+}
+
+function addPaso()
+{
+	var unidades= gv('paso_unidades');
+	var idmodelo= gsv('paso_idmodelo');
+	var idmadera= gsv('paso_idmadera');
+	var puerta_largo= gv('paso_puerta_largo'); 
+	var puerta_ancho= gv('paso_puerta_ancho'); 
+	var puerta_grueso= gv('paso_puerta_grueso'); 
+	var regrueso_dm= gvr('paso_regrueso_dm');
+	var regrueso_macizo= gvr('paso_regrueso_macizo');
+	var regrueso_medidas= gv('paso_regrueso_medidas');
+	var jamba_dm= gvr('paso_jamba_dm');
+	var jamba_macizo= gvr('paso_jamba_macizo');
+	var jamba_medidas= gv('paso_jamba_medidas');
+	var mano_izq= gvr('paso_mano_izq');
+	var mano_dch= gvr('paso_mano_dch');
+	var condena= gvr('paso_condena_si');
+	var material_inox= gvr('paso_material_inox');
+	var material_laton= gvr('paso_material_laton');
+	
+	var receiveReq= getXmlHttpRequestObject();   
+	if (receiveReq.readyState== 4 || receiveReq.readyState== 0) {
+		receiveReq.open("GET", 'ajax_puertas_paso_add.php?idpedido='+idpedido+'&unidades='+unidades+'&idmodelo='+idmodelo+'&idmadera='+idmadera+'&puerta_largo='+puerta_largo+'&puerta_ancho='+puerta_ancho+'&puerta_grueso='+puerta_grueso+'&regrueso_dm='+regrueso_dm+'&regrueso_macizo='+regrueso_macizo+'&regrueso_medidas='+regrueso_medidas+'&jamba_dm='+jamba_dm+'&jamba_macizo='+jamba_macizo+'&jamba_medidas='+jamba_medidas+'&mano_izq='+mano_izq+'&mano_dch='+mano_dch+'&condena='+condena+'&material_inox='+material_inox+'&material_laton='+material_laton, true);
+		receiveReq.onreadystatechange= function() { handlePasoAdd(receiveReq); };
+		receiveReq.send(null);
+	}
+	
+	
+	
+}
+function handlePasoAdd(r)
+{
+	if (r.readyState== 4) {    
+		pasoReload();
+		document.getElementById('paso_unidades').focus();
+	}
+}
+
+loadPasoModelos();
+loadPasoMaderas();
+pasoReload();
+
+</script>

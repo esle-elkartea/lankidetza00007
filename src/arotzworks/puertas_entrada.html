@@ -1,0 +1,371 @@
+<table class="puertas_entrada" id="entrada_ts">
+	<thead>
+		<tr>
+		<td colspan="21">
+		Puertas de entrada
+		</td>
+		</tr>
+		<tr>
+			<td rowspan="2" style="text-align:center">
+			Unids.
+			</td>
+			<td rowspan="2" style="text-align:center">
+			Madera
+			</td>
+			<td colspan="4" style="text-align:center">
+			Puerta
+			</td>
+			<td colspan="3" style="text-align:center">
+			Regrueso
+			</td>
+			<td colspan="3" style="text-align:center">
+			Jamba
+			</td>
+			<td colspan="2" style="text-align:center">
+			Mano
+			</td>
+			<td colspan="2" style="text-align:center">
+			Cerradura 3P
+			</td>
+			<td colspan="2" style="text-align:center">
+			Bisagra
+			</td>
+			<td colspan="2" style="text-align:center">
+			Material
+			</td>
+			<td rowspan="2" style="text-align:center">
+			Acc.
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Modelo
+			</td>
+			<td>
+			Largo
+			</td>
+			<td>
+			Ancho
+			</td>
+			<td>
+			Grueso
+			</td>
+			<td>
+			DM
+			</td>
+			<td>
+			Macizo
+			</td>
+			<td>
+			Medidas
+			</td>
+			<td>
+			DM
+			</td>
+			<td>
+			Macizo
+			</td>
+			<td>
+			Medidas
+			</td>
+			<td>
+			Izda.
+			</td>
+			<td>
+			Dcha.
+			</td>
+			<td>
+			Sol.
+			</td>
+			<td>
+			Nor
+			</td>
+			<td>
+			Larga
+			</td>
+			<td>
+			3 Cortas
+			</td>
+			<td>
+			Inox.
+			</td>
+			<td>
+			Laton
+			</td>
+		</tr>			
+	</thead>
+	<tbody />
+	<thead>
+		<tr class="inputs">
+			<td>
+			<input id="entrada_unidades" type="text" name="unidades" size="2">	
+			</td>
+			<td style="text-align:center">
+			<select id="entrada_idmadera"><option value="0">Seleccionar...</option></select>
+			</td>
+			<td style="text-align:center">
+			<select id="entrada_idmodelo"><option value="0">Seleccionar...</option></select>	
+			</td>
+			<td>
+			<input id="entrada_puerta_largo" type="text" size="2">
+			</td>
+			<td>
+			<input id="entrada_puerta_ancho" type="text" size="2">	
+			</td>
+			<td>
+			<input id="entrada_puerta_grueso" type="text" size="2">
+			</td>
+			<td style="text-align:center">
+			<input id="entrada_regrueso_dm" name="e_regrueso" value="dm" type="radio">
+			</td>
+			<td style="text-align:center">
+			<input id="entrada_regrueso_macizo" name="e_regrueso" value="macizo" type="radio">	
+			</td>
+			<td>
+			<input id="entrada_regrueso_medidas" type="text" size="6">			
+			</td>
+			<td>
+			<input id="entrada_jamba_dm" name="e_jamba" value="dm" type="radio" >
+			</td>
+			<td>
+			<input id="entrada_jamba_macizo" name="e_jamba" value="macizo" type="radio" >	
+			</td>
+			<td>
+			<input id="entrada_jamba_medidas" type="text" size="6">	
+			</td>
+			<td>
+			<input id="entrada_mano_izq" name="e_mano" type="radio" value="izq">	
+			</td>
+			<td>
+			<input id="entrada_mano_dch" name="e_mano" type="radio" value="dcha">	
+			</td>
+			<td>
+			<input id="entrada_cerradura_sol" name="e_condena" type="radio" value="1">
+			</td>
+			<td>
+			<input id="entrada_cerradura_nor" name="e_condena" type="radio" value="0">
+			</td>
+			<td>
+			<input id="entrada_bisagra_larga" name="a_condena" type="radio" value="1">
+			</td>
+			<td>
+			<input id="entrada_bisagra_3cortas" name="a_condena" type="radio" value="0">
+			</td>
+			<td>
+			<input id="entrada_material_inox" name="e_material" type="radio" value="inox">
+			</td>
+			<td>
+			<input id="entrada_material_laton" name="e_material" type="radio" value="laton">	
+			</td>
+			<td>
+			<button id="entrada_add" style="border:none;background:none"  onclick="addentrada()"><img src="icons/16x16/add.png" /></button>
+				
+			</td>
+			
+		</tr>
+	</thead>
+</table>
+
+<script>
+
+
+
+function getXmlHttpRequestObject() {
+			if (window.XMLHttpRequest) {
+				return new XMLHttpRequest(); //Not IE
+			} else if(window.ActiveXObject) {
+				return new ActiveXObject("Microsoft.XMLHTTP"); //IE
+			} else {
+				alert("Su navegador no soporta interacci&oacute;n mediante Ajax.");
+			}
+}                    
+
+function loadentradaModelos()
+{      
+	var receiveReq= getXmlHttpRequestObject();
+	if (receiveReq.readyState== 4 || receiveReq.readyState== 0) {
+		receiveReq.open("GET", 'ajax.php?entity=modelos&condition_entity=1&condition_value=1', true);
+		receiveReq.onreadystatechange= function() { handleentradaModelos(receiveReq); };
+		receiveReq.send(null);
+	}
+}                                                             
+
+function handleentradaModelos(receiveReq)
+{     
+	if (receiveReq.readyState== 4) 
+	{
+		xml= receiveReq.responseXML.documentElement;
+		xml= xml.getElementsByTagName('result');     
+		table= document.getElementById('entrada_idmodelo');
+		while (table.childNodes.length > 0)
+			table.removeChild(table.childNodes[0]);
+		option= document.createElement('option'); 
+		option.innerHTML='[Modelo]';
+		document.getElementById('entrada_idmodelo').appendChild(option);							
+		for (i=0;i<xml.length;i++)
+		{
+			option= document.createElement('option');
+			option.innerHTML= xml[i].getAttribute('name');
+			option.value= xml[i].getAttribute('id');
+			document.getElementById('entrada_idmodelo').appendChild(option);
+		}                                             
+	}
+}
+
+function loadentradaMaderas()
+{      
+	var receiveReq= getXmlHttpRequestObject();
+	if (receiveReq.readyState== 4 || receiveReq.readyState== 0) {
+		receiveReq.open("GET", 'ajax.php?entity=maderas&condition_entity=1&condition_value=1', true);
+		receiveReq.onreadystatechange= function() { handleentradaMaderas(receiveReq); };
+		receiveReq.send(null);
+	}
+}                                                             
+
+function handleentradaMaderas(receiveReq)
+{     
+	if (receiveReq.readyState== 4) 
+	{
+		xml= receiveReq.responseXML.documentElement;
+		xml= xml.getElementsByTagName('result');     
+		table= document.getElementById('entrada_idmadera');
+		while (table.childNodes.length > 0)
+			table.removeChild(table.childNodes[0]);
+		option= document.createElement('option'); 
+		option.innerHTML='[Madera]';
+		document.getElementById('entrada_idmadera').appendChild(option);							
+		for (i=0;i<xml.length;i++)
+		{
+			option= document.createElement('option');
+			option.innerHTML= xml[i].getAttribute('name');
+			option.value= xml[i].getAttribute('id');
+			document.getElementById('entrada_idmadera').appendChild(option);
+		}                                             
+	}
+}
+
+function entradaReload()
+{
+var receiveReq= getXmlHttpRequestObject();   
+if (receiveReq.readyState== 4 || receiveReq.readyState== 0) {
+		receiveReq.open("GET", 'ajax_puertas_entrada_list.php?pedido_id='+idpedido, true);
+		receiveReq.onreadystatechange= function() { handleentradaReload(receiveReq); };
+		receiveReq.send(null);
+	}
+}
+
+
+
+function handleentradaReload(r)
+{
+	  var totalhoras=0;
+	  if (r.readyState== 4) {    
+			if (r.responseText != '')
+			{              
+				ts= document.getElementById('entrada_ts');
+				while (ts.tBodies[0].childNodes.length > 0)
+					ts.tBodies[0].removeChild(ts.tBodies[0].childNodes[0]);
+				xml= r.responseXML.documentElement;
+				xml= xml.getElementsByTagName('puerta_entrada');
+				tbody= ts.tBodies[0];
+				
+				for (i=0;i<xml.length;i++)
+				{
+					x= xml[i];
+					tr= document.createElement("tr");
+					ap(tr,cn(ga(x,'unidades')));
+					ap(tr,cn(ga(x,'madera')));
+					ap(tr,cn(ga(x,'modelo')));
+					ap(tr,cn(ga(x,'puerta_largo')+" cm."));
+					ap(tr,cn(ga(x,'puerta_ancho')+" cm."));
+					ap(tr,cn(ga(x,'puerta_grueso')+" cm."));
+					ap(tr,cnt(ga(x,'regrueso_dm')));
+					ap(tr,cnt(ga(x,'regrueso_macizo')));
+					ap(tr,cn(ga(x,'regrueso_medidas')));
+					ap(tr,cnt(ga(x,'jamba_dm')));
+					ap(tr,cnt(ga(x,'jamba_macizo')));
+					ap(tr,cn(ga(x,'jamba_medidas')));
+					ap(tr,cnt(ga(x,'mano_izq')));
+					ap(tr,cnt(ga(x,'mano_dch')));
+					ap(tr,cnt(ga(x,'cerradura_sol')));
+					ap(tr,cnt(ga(x,'cerradura_nor')));
+					ap(tr,cnt(ga(x,'bisagra_larga')));
+					ap(tr,cnt(ga(x,'bisagra_3piezas')));
+					ap(tr,cnt(ga(x,'material_inox')));
+					ap(tr,cnt(ga(x,'material_laton')));
+					but= document.createElement("button");
+					but.style.background= 'none';
+					but.style.border= 'none';
+					but.id= ga(x,'id');
+					but.innerHTML= "<img src=\"icons/16x16/cancel.png\" />";
+					but.onclick= function () { deleteentrada(this.id); }
+					ap(tr,cno(but));
+					ap(tbody,tr);
+				}
+				
+			}
+		}	
+}
+
+function deleteentrada(id)
+{
+	var receiveReq= getXmlHttpRequestObject();   
+	if (receiveReq.readyState== 4 || receiveReq.readyState== 0) {
+		receiveReq.open("GET", 'ajax_puertas_entrada_delete.php?id='+id, true);
+		receiveReq.onreadystatechange= function() { handleentradadelete(receiveReq); };
+		receiveReq.send(null);
+	}
+}
+
+function handleentradadelete(r)
+{
+	if (r.readyState== 4) {    
+		entradaReload();
+	}
+}
+
+function addentrada()
+{
+	var unidades= gv('entrada_unidades');
+	var idmodelo= gsv('entrada_idmodelo');
+	var idmadera= gsv('entrada_idmadera');
+	var puerta_largo= gv('entrada_puerta_largo'); 
+	var puerta_ancho= gv('entrada_puerta_ancho'); 
+	var puerta_grueso= gv('entrada_puerta_grueso'); 
+	var regrueso_dm= gvr('entrada_regrueso_dm');
+	var regrueso_macizo= gvr('entrada_regrueso_macizo');
+	var regrueso_medidas= gv('entrada_regrueso_medidas');
+	var jamba_dm= gvr('entrada_jamba_dm');
+	var jamba_macizo= gvr('entrada_jamba_macizo');
+	var jamba_medidas= gv('entrada_jamba_medidas');
+	var mano_izq= gvr('entrada_mano_izq');
+	var mano_dch= gvr('entrada_mano_dch');
+	var cerradura_sol = gvr('entrada_cerradura_sol');
+	var cerradura_nor = gvr('entrada_cerradura_nor');
+	var bisagra_larga = gvr('entrada_bisagra_larga');
+	var bisagra_3cortas = gvr('entrada_bisagra_3cortas');
+	var material_inox= gvr('entrada_material_inox');
+	var material_laton= gvr('entrada_material_laton');
+	
+	var receiveReq= getXmlHttpRequestObject();   
+	if (receiveReq.readyState== 4 || receiveReq.readyState== 0) {
+		receiveReq.open("GET", 'ajax_puertas_entrada_add.php?idpedido='+idpedido+'&unidades='+unidades+'&idmodelo='+idmodelo+'&idmadera='+idmadera+'&puerta_largo='+puerta_largo+'&puerta_ancho='+puerta_ancho+'&puerta_grueso='+puerta_grueso+'&regrueso_dm='+regrueso_dm+'&regrueso_macizo='+regrueso_macizo+'&regrueso_medidas='+regrueso_medidas+'&jamba_dm='+jamba_dm+'&jamba_macizo='+jamba_macizo+'&jamba_medidas='+jamba_medidas+'&mano_izq='+mano_izq+'&mano_dch='+mano_dch+'&cerradura_sol='+cerradura_sol+'&cerradura_nor='+cerradura_nor+'&bisagra_larga='+bisagra_larga+'&bisagra_3cortas='+bisagra_3cortas+'&material_inox='+material_inox+'&material_laton='+material_laton, true);
+		receiveReq.onreadystatechange= function() { handleentradaAdd(receiveReq); };
+		receiveReq.send(null);
+	}
+	
+	
+	
+}
+function handleentradaAdd(r)
+{
+	if (r.readyState== 4) {    
+		entradaReload();
+		document.getElementById('entrada_unidades').focus();
+	}
+}
+
+loadentradaModelos();
+loadentradaMaderas();
+entradaReload();
+</script>

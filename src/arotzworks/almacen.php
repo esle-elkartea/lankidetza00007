@@ -1,0 +1,74 @@
+<?php
+include ("local.php");
+error_reporting(E_ALL);
+$p = new aworkspage();
+$sf = new scaffold("pedidos");
+$p->addWidget(html::write("<h1>Pedidos en Fabricaci&oacute;n</h1>"));
+$d = new datagrid("pedido","pedido.php?");
+$d->toolbar=false;
+$sf->__query ="SELECT * FROM pedidos where estado =4 OR estado=5";
+$d->objectField("idmodelo",new scaffold("modelos"),"referencia");
+$d->objectField("idmadera",new scaffold("maderas"),"referencia");
+$d->specialField("fecha","timestamp","date","html");
+$d->headers("tipo_pedido","Tipo de Pedido");
+$d->specialField("tipo_pedido","tipo_pedido","ooentity","tipowidget");
+$d->hideField("observaciones");
+$d->hideField("otro_material");
+$d->specialField("estado","estado",ooentity,estadolistwidget);
+$d->specialField("fecha_pedido","timestamp",date,html);
+$d->specialField("fecha_entrega_prevista","timestamp",date,html);
+$d->specialField("fecha_entrega","timestamp",date,html);
+$d->headers("fecha_entrega","Fecha de Entrega");
+$d->headers("fecha_entrega_prevista","Fecha de Entrega Prevista");
+$d->headers("fecha_pedido","Fecha de Pedido");
+$b = new Box("Pedidos en Cartera");
+$d->drop($sf);
+$p->addWidget($d);
+$p->addWidget(html::write("<h1>Pedidos En Almacen</h1>"));
+$d = new datagrid("pedido","pedido.php?");
+$d->toolbar=false;
+$sf->__query ="SELECT * FROM pedidos where estado =6 OR estado=7";
+$d->objectField("idmodelo",new scaffold("modelos"),"referencia");
+$d->objectField("idmadera",new scaffold("maderas"),"referencia");
+$d->specialField("fecha","timestamp","date","html");
+
+$d->hideField("observaciones");
+$d->hideField("otro_material");
+$d->specialField("estado","estado",ooentity,estadolistwidget);
+$d->specialField("fecha_pedido","timestamp",date,html);
+$d->headers("tipo_pedido","Tipo de Pedido");
+$d->specialField("tipo_pedido","tipo_pedido","ooentity","tipowidget");
+$d->specialField("fecha_entrega_prevista","timestamp",date,html);
+$d->specialField("fecha_entrega","timestamp",date,html);
+$d->headers("fecha_entrega","Fecha de Entrega");
+$d->headers("fecha_entrega_prevista","Fecha de Entrega Prevista");
+$d->headers("fecha_pedido","Fecha de Pedido");
+$b = new Box("Pedidos en Cartera");
+$d->drop($sf);
+$p->addWidget($d);
+
+$p->addWidget(html::write("<h1>&Uacute;ltimos Pedidos Entregados</h1>"));
+$d = new datagrid("pedido","pedido.php?");
+$d->toolbar=false;
+$sf->__query ="SELECT * FROM pedidos where estado =8 OR estado=9";
+$d->objectField("idmodelo",new scaffold("modelos"),"referencia");
+$d->objectField("idmadera",new scaffold("maderas"),"referencia");
+$d->specialField("fecha","timestamp","date","html");
+
+$d->hideField("observaciones");
+$d->hideField("otro_material");
+$d->specialField("estado","estado",ooentity,estadolistwidget);
+$d->specialField("fecha_pedido","timestamp",date,html);
+$d->specialField("fecha_entrega_prevista","timestamp",date,html);
+$d->specialField("fecha_entrega","timestamp",date,html);
+$d->headers("fecha_entrega","Fecha de Entrega");
+$d->headers("tipo_pedido","Tipo de Pedido");
+$d->specialField("tipo_pedido","tipo_pedido","ooentity","tipowidget");
+$d->headers("fecha_entrega_prevista","Fecha de Entrega Prevista");
+$d->headers("fecha_pedido","Fecha de Pedido");
+$b = new Box("Pedidos en Cartera");
+$d->drop($sf);
+$p->addWidget($d);
+
+
+$p->draw();
