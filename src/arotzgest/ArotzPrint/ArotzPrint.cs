@@ -84,7 +84,7 @@ public class BudgetPrintDocument : ArotzPrintDocument {
   public DateTime Date;
   public Image LogoImage;
   List<Concept> concepts = new List<Concept> ();
-  public void addConcept (double quantity, string text, double price) {
+  public void AddConcept (double quantity, string text, double price) {
     Concept concept = new Concept ();
     concept.Quantity = quantity;
     concept.Text = text;
@@ -106,7 +106,7 @@ public class BudgetPrintDocument : ArotzPrintDocument {
         drawImage (e.Graphics, margin, margin, 8, 4, LogoImage);
       }
       drawString (e.Graphics, width - margin - 6, margin + 0.15, 3.5, 0, new Font ("tahoma", 12, FontStyle.Bold), "Presupuesto:\nFecha:", false, true);
-      drawString (e.Graphics, width - margin - 2.5, margin + 0.15, 2.5, 0, new Font ("tahoma", 12), Number + "\n" + formatDate (Date), false, true);
+      drawString (e.Graphics, width - margin - 2.5, margin + 0.15, 2.5, 0, new Font ("tahoma", 12), Number + "/" + Date.Year + "\n" + formatDate (Date), false, true);
       drawString (e.Graphics, margin, margin + 2.5, width - 2 * margin, 0, new Font ("tahoma", 16, FontStyle.Bold), ClientName, false, true);
       drawString (e.Graphics, margin, margin + 3.25, width - 2 * margin, 0, new Font ("tahoma", 12), ClientDetails, false, true);
     }
@@ -168,12 +168,13 @@ public class InvoicePrintDocument : ArotzPrintDocument {
   int page = 0;
   int line = 0;
   public double VAT;
+  public double Retention;
   public int LogoType, Number;
   public string ClientName, ClientDetails, CompanyName, CompanyDetails;
   public DateTime Date;
   public Image LogoImage;
   List<Concept> concepts = new List<Concept> ();
-  public void addConcept (double quantity, string text, double price) {
+  public void AddConcept (double quantity, string text, double price) {
     Concept concept = new Concept ();
     concept.Quantity = quantity;
     concept.Text = text;
@@ -195,7 +196,7 @@ public class InvoicePrintDocument : ArotzPrintDocument {
         drawImage (e.Graphics, margin, margin, 8, 4, LogoImage);
       }
       drawString (e.Graphics, width - margin - 6, margin + 0.15, 3.5, 0, new Font ("tahoma", 12, FontStyle.Bold), "Factura:\nFecha:", false, true);
-      drawString (e.Graphics, width - margin - 2.5, margin + 0.15, 2.5, 0, new Font ("tahoma", 12), Number + "\n" + formatDate (Date), false, true);
+      drawString (e.Graphics, width - margin - 2.5, margin + 0.15, 2.5, 0, new Font ("tahoma", 12), Number + "/" + Date.Year + "\n" + formatDate (Date), false, true);
       drawString (e.Graphics, margin, margin + 2.5, width - 2 * margin, 0, new Font ("tahoma", 16, FontStyle.Bold), ClientName, false, true);
       drawString (e.Graphics, margin, margin + 3.25, width - 2 * margin, 0, new Font ("tahoma", 12), ClientDetails, false, true);
     }
@@ -226,12 +227,12 @@ public class InvoicePrintDocument : ArotzPrintDocument {
       }
     }
     if (line == concepts.Count) {
-      if (position < bottom - 3) {
-        bottom -= 3;
-        drawLine (e.Graphics, grayPen, width - margin - 3, bottom, width - margin - 3, bottom + 3);
-        drawLine (e.Graphics, blackPen, width - margin, bottom, width - margin, bottom + 3);
-        drawLine (e.Graphics, blackPen, width - margin, bottom + 3, width - margin - 6, bottom + 3);
-        drawLine (e.Graphics, blackPen, width - margin - 6, bottom + 3, width - margin - 6, bottom);
+      if (position < bottom - 4) {
+        bottom -= 4;
+        drawLine (e.Graphics, grayPen, width - margin - 3, bottom, width - margin - 3, bottom + 4);
+        drawLine (e.Graphics, blackPen, width - margin, bottom, width - margin, bottom + 4);
+        drawLine (e.Graphics, blackPen, width - margin, bottom + 4, width - margin - 6, bottom + 4);
+        drawLine (e.Graphics, blackPen, width - margin - 6, bottom + 4, width - margin - 6, bottom);
         drawString (e.Graphics, width - margin - 5.9, bottom + 0.25, 2.8, 0, font, "Subtotal", false, false);
         double subtotal = 0;
         foreach (Concept concept in concepts) subtotal += concept.Quantity * concept.Price;
@@ -241,9 +242,13 @@ public class InvoicePrintDocument : ArotzPrintDocument {
         double vat = subtotal * VAT / 100;
         drawString (e.Graphics, width - margin - 2.9, bottom + 1.25, 2.8, 0, font, formatDouble (vat) + " €", false, true);
         drawLine (e.Graphics, grayPen, width - margin, bottom + 2, width - margin - 6, bottom + 2);
-        drawString (e.Graphics, width - margin - 5.9, bottom + 2.25, 2.8, 0, font, "Total", false, false);
-        double total = subtotal + vat;
-        drawString (e.Graphics, width - margin - 2.9, bottom + 2.25, 2.8, 0, font, formatDouble (total) + " €", false, true);
+        drawString (e.Graphics, width - margin - 5.9, bottom + 2.2, 3.2, 0, font, "Retención " + Retention + "%", false, false);
+        double retention = (subtotal + vat) * Retention / 100;
+        drawString (e.Graphics, width - margin - 2.9, bottom + 2.25, 2.8, 0, font, formatDouble (retention) + " €", false, true);
+        drawLine (e.Graphics, grayPen, width - margin, bottom + 3, width - margin - 6, bottom + 3);
+        drawString (e.Graphics, width - margin - 5.9, bottom + 3.25, 2.8, 0, font, "Total", false, false);
+        double total = subtotal + vat - retention;
+        drawString (e.Graphics, width - margin - 2.9, bottom + 3.25, 2.8, 0, font, formatDouble (total) + " €", false, true);
       } else {
         e.HasMorePages = true;
         page++;
@@ -266,7 +271,7 @@ public class ReceiptPrintDocument : ArotzPrintDocument {
   public Image LogoImage;
   public DateTime Date;
   List<ReceiptConcept> concepts = new List<ReceiptConcept> ();
-  public void addConcept (int number, double price, DateTime dueDate) {
+  public void AddConcept (int number, double price, DateTime dueDate) {
     ReceiptConcept concept = new ReceiptConcept ();
     concept.Number = number;
     concept.Price = price;
@@ -290,8 +295,8 @@ public class ReceiptPrintDocument : ArotzPrintDocument {
       } else if (LogoType == 2) {
         drawImage (e.Graphics, margin, offset + margin, 8, 4, LogoImage);
       }
-      drawString (e.Graphics, width - margin - 6, offset + margin + 0.15, 3.5, 0, new Font ("tahoma", 12, FontStyle.Bold), "Recibo:\nFecha:", false, true);
-      drawString (e.Graphics, width - margin - 2.5, offset + margin + 0.15, 2.5, 0, new Font ("tahoma", 12), Number + "/" + concept.Number + "\n" + formatDate (Date), false, true);
+      drawString (e.Graphics, width - margin - 6.5, offset + margin + 0.15, 3.5, 0, new Font ("tahoma", 12, FontStyle.Bold), "Recibo:\nFecha:", false, true);
+      drawString (e.Graphics, width - margin - 3.5, offset + margin + 0.15, 3.5, 0, new Font ("tahoma", 12), Number + "/" + Date.Year + "-" + concept.Number +"\n" + formatDate (Date), false, true);
       drawString (e.Graphics, margin, offset + margin + 2.5, width - 2 * margin, 0, new Font ("tahoma", 16, FontStyle.Bold), ClientName, false, true);
       drawString (e.Graphics, margin, offset + margin + 3.25, width - 2 * margin, 0, new Font ("tahoma", 12), ClientDetails, false, true);
 
@@ -302,5 +307,60 @@ public class ReceiptPrintDocument : ArotzPrintDocument {
     }
     page ++;
     if (page < concepts.Count) e.HasMorePages = true;
+  }
+}
+
+public class ReportPrintDocument : ArotzPrintDocument {
+  int page = 0;
+  int line = 0;
+  public int Number;
+  public DateTime Date;
+  List<string []> concepts = new List<string []> ();
+  public void AddConcept (string quantity, string text, string cost, string price) {
+    concepts.Add (new string [] { quantity, text, cost, price });
+  }
+  protected override void OnPrintPage (PrintPageEventArgs e) {
+    base.OnPrintPage (e);
+    width = e.PageBounds.Width / scale;
+    height = e.PageBounds.Height / scale;
+    if (page == 0) {
+      drawString (e.Graphics, margin, margin, width - 2 * margin - 5, 0, new Font ("tahoma", 16, FontStyle.Bold), "Orden de trabajo", false, false);
+      drawString (e.Graphics, width - margin - 6, margin + 0.15, 3.5, 0, new Font ("tahoma", 12, FontStyle.Bold), "Presupuesto:\nFecha:", false, true);
+      drawString (e.Graphics, width - margin - 2.5, margin + 0.15, 2.5, 0, new Font ("tahoma", 12), Number + "/" + Date.Year + "\n" + formatDate (Date), false, true);
+    }
+    double top = margin + (page == 0 ? 2 : 0);
+    double position = top + 1;
+    double bottom = height - margin;
+    Font font = new Font ("tahoma", 12, FontStyle.Bold);
+    Pen grayPen = new Pen (Color.Gray, 0.01f * scale);
+    Pen blackPen = new Pen (Color.Black, 0.025f * scale);
+    drawString (e.Graphics, margin + 0.1, top + 0.25, 2.3, 0, font, "Cantidad", false, false);
+    drawString (e.Graphics, margin + 2.6, top + 0.25, width - 2 * margin - 8.7, 0, font, "Concepto", false, false);
+    drawString (e.Graphics, width - margin - 5.9, top + 0.25, 2.8, 0, font, "Horas", false, false);
+    drawString (e.Graphics, width - margin - 2.9, top + 0.25, 2.8, 0, font, "Total", false, false);
+    font = new Font ("tahoma", 12);
+    for (; line < concepts.Count; line++) {
+      double height2 = measureString (e.Graphics, width - 2 * margin - 8.7, 0, font, concepts [line][1], true, false);
+      if (position + height2 <= bottom) {
+        if (position + 1 > top) drawLine (e.Graphics, grayPen, margin, position, width - margin, position);
+        drawString (e.Graphics, margin + 0.1, position + 0.1, 2.3, 0, font, concepts [line][0], false, true);
+        drawString (e.Graphics, margin + 2.6, position + 0.1, width - 2 * margin - 8.7, 0, font, concepts [line][1], true, false);
+        drawString (e.Graphics, width - margin - 5.9, position + 0.1, 2.8, 0, font, concepts [line][2], false, true);
+        drawString (e.Graphics, width - margin - 2.9, position + 0.1, 2.8, 0, font, concepts [line][3], false, true);
+        position += height2 + 0.1;
+      } else {
+        e.HasMorePages = true;
+        page++;
+        break;
+      }
+    }
+    drawLine (e.Graphics, grayPen, margin + 2.5, top, margin + 2.5, bottom);
+    drawLine (e.Graphics, grayPen, width - margin - 6, top, width - margin - 6, bottom);
+    drawLine (e.Graphics, grayPen, width - margin - 3, top, width - margin - 3, bottom);
+    drawLine (e.Graphics, blackPen, margin, top + 1, width - margin, top + 1);
+    drawLine (e.Graphics, blackPen, margin, top, width - margin, top);
+    drawLine (e.Graphics, blackPen, width - margin, top, width - margin, bottom);
+    drawLine (e.Graphics, blackPen, width - margin, bottom, margin, bottom);
+    drawLine (e.Graphics, blackPen, margin, bottom, margin, top);
   }
 }

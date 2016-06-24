@@ -41,7 +41,7 @@ class HomeTabPage : TabPage {
     Interface.Label_Create (this, 0, 48, "Pendientes");
     itemListView = Interface.ListView_Create (this, 0, 76, 0, 128, itemListView_SelectedIndexChanged, itemListView_DoubleClick);
     Interface.ListView_AddColumnHeader (itemListView, 64, "Tipo");
-    ColumnHeader columnHeader = Interface.ListView_AddColumnHeader (itemListView, 41, "Número");
+    ColumnHeader columnHeader = Interface.ListView_AddColumnHeader (itemListView, 53, "Número");
     columnHeader.TextAlign = HorizontalAlignment.Right;
     Interface.ListView_AddColumnHeader (itemListView, 54, "Fecha");
     Interface.ListView_AddColumnHeader (itemListView, 192, "Cliente");
@@ -67,11 +67,11 @@ class HomeTabPage : TabPage {
     Interface.ListView_Clear (itemListView);
     foreach (Database.Budget budget in Database.Budget.ListPendant ()) {
       budget.Calculate ();
-      Interface.ListView_AddListViewItem (itemListView, new string [] { "Presupuesto", budget.Number.ToString (), Data.Date_Format (budget.Date), budget.ClientName, Data.Double_Format (budget.Price) }, budget);
+      Interface.ListView_AddListViewItem (itemListView, new string [] { "Presupuesto", budget.Number + "/" + budget.Date.Year, Data.Date_Format (budget.Date), budget.ClientName, Data.Double_Format (budget.Price) }, budget);
     }
     foreach (Database.Invoice invoice in Database.Invoice.ListPendant ()) {
       invoice.Calculate ();
-      Interface.ListView_AddListViewItem (itemListView, new string [] { "Factura", invoice.Number.ToString (), Data.Date_Format (invoice.Date), invoice.ClientName, Data.Double_Format (invoice.Price) }, invoice);
+      Interface.ListView_AddListViewItem (itemListView, new string [] { "Factura", invoice.Number + "/" + invoice.Date.Year, Data.Date_Format (invoice.Date), invoice.ClientName, Data.Double_Format (invoice.Price) }, invoice);
     }
     Interface.ListView_Clear (accountListView);
     for (int i = -1; i <= 0; i++) {

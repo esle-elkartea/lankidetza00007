@@ -30,7 +30,7 @@ using System.Windows.Forms;
 
 static class ArotzGest {
   public static string Name = "ArotzGest";
-  public static string Version = "0.9";
+  public static string Version = "2.0";
   static Form splashForm;
   static Timer alphaTimer, closeTimer;
   [STAThread]
@@ -40,7 +40,7 @@ static class ArotzGest {
       return;
     }
     Application.EnableVisualStyles ();
-    splashForm = new Form ();
+    /*splashForm = new Form ();
     Interface.Form_Prepare (splashForm, 636, 342);
     splashForm.StartPosition = FormStartPosition.CenterScreen;
     splashForm.FormBorderStyle = FormBorderStyle.None;
@@ -53,7 +53,7 @@ static class ArotzGest {
     closeTimer = new Timer ();
     closeTimer.Interval = 1000;
     closeTimer.Tick += closeTimer_Tick;
-    Application.Run (splashForm);
+    Application.Run (splashForm);*/
     Application.Run (new MainForm ());
   }
   static void alphaTimer_Tick (object o, EventArgs e) {

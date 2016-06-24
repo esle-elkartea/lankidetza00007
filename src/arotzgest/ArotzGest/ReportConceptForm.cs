@@ -30,17 +30,24 @@ using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
-class BudgetConceptForm : Form {
+class ReportConceptForm : Form {
   Button acceptButton, cancelButton;
-  ComboBox itemComboBox;
+  ComboBox employeeComboBox;
+  Database.ReportConcept reportConcept;
   Interface.ErrorManager errorManager;
-  public BudgetConceptForm (Database.BudgetConcept concept) {
-    Interface.Form_Prepare (this, 316, 116);
+  TextBox quantityTextBox;
+  public ReportConceptForm (Database.ReportConcept concept) {
+    reportConcept = concept;
+    Interface.Form_Prepare (this, 316, 228);
     errorManager = new Interface.ErrorManager ();
-    Interface.HeaderPanel_Create (this, 8, 8, "Budget", "Presupuesto", concept == null ? "Añadir" : "Modificar");
-    Interface.Label_Create (this, 8, 48, "Presupuesto");
-    itemComboBox = Interface.ComboBox_Create (this, 136, 48, 54);
-    foreach (Database.Budget item in Database.Budget.ListAccepted ()) Interface.ComboBox_AddItem (itemComboBox, item, concept != null && item.Id == concept.Id);
+    Interface.HeaderPanel_Create (this, 8, 8, "AccountEntry", "Parte", "Modificar");
+    Interface.Label_Create (this, 8, 48, "Empleado");
+    employeeComboBox = Interface.ComboBox_Create (this, 136, 48, 128);
+    foreach (Database.Employee employee in Database.Employee.Search ("", reportConcept.Id)) Interface.ComboBox_AddItem (employeeComboBox, employee, employee.Id == reportConcept.EmployeeId);
+    Interface.Label_Create (this, 8, 76, "Horas");
+    quantityTextBox = Interface.TextBox_Create (this, 136, 76, 51, 1, 9);
+    quantityTextBox.TextAlign = HorizontalAlignment.Right;
+    quantityTextBox.Text = concept == null ? "" : reportConcept.Quantity.ToString ();
     acceptButton = Interface.Button_Create (this, 8, ClientSize.Height - 32, "Aceptar", acceptButton_Click);
     AcceptButton = acceptButton;
     cancelButton = Interface.Button_Create (this, ClientSize.Width - 88, ClientSize.Height - 32, "Cancelar", null);
@@ -48,14 +55,19 @@ class BudgetConceptForm : Form {
   }
   void acceptButton_Click (object o, EventArgs e) {
     errorManager.Clear ();
-    Database.Budget item = itemComboBox.SelectedItem as Database.Budget;
-    if (itemComboBox.SelectedItem == null) errorManager.Add (itemComboBox, "El presupuesto ha de especificarse");
+    Database.Employee employee = employeeComboBox.SelectedItem as Database.Employee;
+    if (employeeComboBox.SelectedItem == null) errorManager.Add (employeeComboBox, "El empleado ha de especificarse");
+    double? quantity = Data.Double_Parse (quantityTextBox.Text);
+    if (quantityTextBox.Text == "") errorManager.Add (quantityTextBox, "Las horas han de especificarse");
+    else if (quantity == null || quantity >= 1000000) errorManager.Add (quantityTextBox, "Las horas especificadas no son válidas");
     if (errorManager.Controls.Count > 0) {
       errorManager.Controls [0].Focus ();
       return;
     }
-    item.Calculate ();
-    Tag = new Database.BudgetConcept (item.Id, "Presupuesto nº " + item.Number + "/" + item.Date.Year, 1, item.Cost, item.Price);
+    reportConcept.EmployeeId = employee.Id;
+    reportConcept.EmployeeName = employee.Name;
+    reportConcept.Quantity = quantity;
+    Tag = reportConcept;
     DialogResult = DialogResult.OK;
     Close ();
   }

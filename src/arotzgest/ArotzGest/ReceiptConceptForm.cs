@@ -42,11 +42,11 @@ class ReceiptConceptForm : Form {
     errorManager = new Interface.ErrorManager ();
     Interface.HeaderPanel_Create (this, 8, 8, "Receipt", "Recibo", concept == null ? "Añadir" : "Modificar");
     Interface.Label_Create (this, 8, 48, "Número");
-    numberTextBox = Interface.TextBox_Create (this, 136, 48, 36, 1, 6);
+    numberTextBox = Interface.TextBox_Create (this, 136, 48, 24, 1, 4);
     numberTextBox.TextAlign = HorizontalAlignment.Right;
     numberTextBox.Text = concept == null ? suggestedNumber.ToString () : concept.Number.ToString ();
     Interface.Label_Create (this, 8, 76, "Importe");
-    priceTextBox = Interface.TextBox_Create (this, 136, 76, 45, 1, 8);
+    priceTextBox = Interface.TextBox_Create (this, 136, 76, 51, 1, 9);
     priceTextBox.TextAlign = HorizontalAlignment.Right;
     priceTextBox.Text = concept == null ? Data.Double_Format (price) : Data.Double_Format (concept.Price);
     Interface.Label_Create (this, 8, 104, "Fecha vencimiento");
@@ -74,7 +74,7 @@ class ReceiptConceptForm : Form {
     errorManager.Clear ();
     int? number = Data.Int_Parse (numberTextBox.Text);
     if (numberTextBox.Text == "") errorManager.Add (numberTextBox, "El número ha de especificarse");
-    else if (number == null || number <= 0 || number >= 1000000) errorManager.Add (numberTextBox, "El número especificado no es válido");
+    else if (number == null || number <= 0 || number >= 10000) errorManager.Add (numberTextBox, "El número especificado no es válido");
     else if (concept == null || number != concept.Number) foreach (int i in usedNumbers) if (number == i) errorManager.Add (numberTextBox, "Ya existe un recibo con el número especificado");
     double? price = Data.Double_Parse (priceTextBox.Text);
     if (priceTextBox.Text == "") errorManager.Add (priceTextBox, "El importe ha de especificarse");

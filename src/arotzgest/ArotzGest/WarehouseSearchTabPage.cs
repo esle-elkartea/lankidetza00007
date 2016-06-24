@@ -29,22 +29,20 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-class ProviderSearchTabPage : TabPage {
+class WarehouseSearchTabPage : TabPage {
   Button acceptButton, cancelButton, createButton, detailButton, searchButton;
   ListView itemListView;
   TextBox nameTextBox;
-  public ProviderSearchTabPage () {
-    Name = "providerSearch";
-    Text = "Proveedores";
+  public WarehouseSearchTabPage () {
+    Name = "WarehouseSearch";
+    Text = "Almacenes";
     acceptButton = Interface.Button_Create (acceptButton_Click);
-    Interface.HeaderPanel_Create (this, 0, 8, "Provider", Text, "Buscar");
+    Interface.HeaderPanel_Create (this, 0, 8, "Warehouse", Text, "Buscar");
     Interface.Label_Create (this, 0, 48, "Nombre");
     nameTextBox = Interface.TextBox_Create (this, 128, 48, 128, 1, 255);
     searchButton = Interface.Button_Create (this, 0, 76, "Buscar", searchButton_Click);
     itemListView = Interface.ListView_Create (this, 0, 116, 0, 0, itemListView_SelectedIndexChanged, itemListView_DoubleClick);
-    Interface.ListView_AddColumnHeader (itemListView, 192, "Nombre");
-    Interface.ListView_AddColumnHeader (itemListView, 59, "CIF/NIF");
-    Interface.ListView_AddColumnHeader (itemListView, 57, "Teléfono");
+    Interface.ListView_AddColumnHeader (itemListView, 128, "Nombre");
     createButton = Interface.Button_Create (this, 0, 0, "Crear", createButton_Click);
     detailButton = Interface.Button_Create (this, 88, 0, "Detalle", detailButton_Click);
     detailButton.Enabled = false;
@@ -69,10 +67,10 @@ class ProviderSearchTabPage : TabPage {
     Parent.Controls.Remove (this);
   }
   void createButton_Click (object o, EventArgs e) {
-    (TopLevelControl as MainForm).ProviderDetailTabPage_Open (0);
+    (TopLevelControl as MainForm).WarehouseDetailTabPage_Open (0);
   }
   void detailButton_Click (object o, EventArgs e) {
-    (TopLevelControl as MainForm).ProviderDetailTabPage_Open ((int) itemListView.SelectedItems [0].Tag);
+    (TopLevelControl as MainForm).WarehouseDetailTabPage_Open ((int) itemListView.SelectedItems [0].Tag);
   }
   void itemListView_DoubleClick (object o, EventArgs e) {
     detailButton.PerformClick ();
@@ -82,7 +80,7 @@ class ProviderSearchTabPage : TabPage {
   }
   void searchButton_Click (object o, EventArgs e) {
     Interface.ListView_Clear (itemListView);
-    foreach (Database.Provider item in Database.Provider.Search (nameTextBox.Text)) Interface.ListView_AddListViewItem (itemListView, new string [] { item.Name, item.FIC, item.Phone }, item.Id);
+    foreach (Database.Warehouse item in Database.Warehouse.Search (nameTextBox.Text)) Interface.ListView_AddListViewItem (itemListView, new string [] { item.Name }, item.Id);
     if (itemListView.Items.Count > 0) itemListView.Focus ();
   }
 }

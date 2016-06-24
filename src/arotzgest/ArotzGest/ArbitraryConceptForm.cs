@@ -66,10 +66,10 @@ class ArbitraryConceptForm : Form {
     else if (quantity == null || quantity < 0 || quantity >= 1000000) errorManager.Add (quantityTextBox, "La cantidad especificada no es válida");
     double? cost = Data.Double_Parse (costTextBox.Text);
     if (costTextBox.Text == "") errorManager.Add (costTextBox, "El coste ha de especificarse");
-    else if (cost == null || cost < 0 || cost >= 1000000) errorManager.Add (costTextBox, "El coste especificado no es válido");
+    else if (cost == null || cost <= -1000000 || cost >= 1000000) errorManager.Add (costTextBox, "El coste especificado no es válido");
     double? price = Data.Double_Parse (priceTextBox.Text);
     if (priceTextBox.Text == "") errorManager.Add (priceTextBox, "El precio ha de especificarse");
-    else if (price == null || price < 0 || price >= 1000000) errorManager.Add (priceTextBox, "El precio especificado no es válido");
+    else if (price == null || price <= -1000000 || price >= 1000000) errorManager.Add (priceTextBox, "El precio especificado no es válido");
     if (errorManager.Controls.Count > 0) {
       errorManager.Controls [0].Focus ();
       return;

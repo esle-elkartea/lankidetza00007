@@ -26,16 +26,17 @@
  * */
 
 using System;
-using System.Data.OleDb;
 using System.Collections.Generic;
+using System.Data.OleDb;
 using System.Text.RegularExpressions;
 
 static class Database {
   static OleDbConnection connection;
-  public static string [] BudgetStates = new string [] { "Pendiente", "Aceptado", "Rechazado" };
+  public static string [] BudgetStates = new string [] { "Pendiente", "Rechazado", "Aceptado", "Terminado", "Entregado" };
   public static string [] InvoiceStates = new string [] { "Pendiente", "Cobrada" };
   public static string [] LogoTypes = new string [] { "", "Pequeño", "Grande" };
   public static string [] MaterialTypes = new string [] { "Unitario", "Unidimensional", "Bidimensional", "Tridimensional" };
+  public static string [] ReportTypes = new string [] { "Fabricación", "Montaje" };
   public static string [] Months = new string [] { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" };
   public static bool Connect () {
     connection = new OleDbConnection ("Provider = Microsoft.Jet.OleDb.4.0; Data Source = " + System.Windows.Forms.Application.StartupPath + "\\ArotzGest.mdb");
@@ -173,7 +174,7 @@ static class Database {
     }
   }
   public class Budget {
-    static string source = "Budgets.Id, Budgets.Number, Budgets.ClientId, Clients.Name, Budgets.Date, Budgets.State from Budgets inner join Clients on Budgets.ClientId = Clients.Id";
+    static string source = "Budgets.Id, Budgets.Number, Budgets.ClientId, Clients.Name, Budgets.Date, Budgets.State, Budgets.WarehouseId, Warehouses.Name from (Budgets inner join Clients on Budgets.ClientId = Clients.Id) left join Warehouses on Budgets.WarehouseId = Warehouses.Id";
     public readonly int Id;
     public int Number;
     public int ClientId;
@@ -181,11 +182,14 @@ static class Database {
     public DateTime Date;
     public int State;
     public double Cost, Price;
-    public Budget (int number, int clientId, DateTime date, int state) {
+    public int? WarehouseId;
+    public string WarehouseName;
+    public Budget (int number, int clientId, DateTime date, int state, int? warehouseId) {
       Number = number;
       ClientId = clientId;
       Date = date;
       State = state;
+      WarehouseId = warehouseId;
     }
     public Budget (OleDbDataReader dataReader) {
       Id = dataReader.GetInt32 (0);
@@ -194,15 +198,17 @@ static class Database {
       ClientName = dataReader.GetString (3);
       Date = dataReader.GetDateTime (4);
       State = dataReader.GetInt32 (5);
+      WarehouseId = dataReader.IsDBNull (6) ? (int?) null : dataReader.GetInt32 (6);
+      WarehouseName = dataReader.IsDBNull (7) ? null : dataReader.GetString (7);
     }
-    public static int CalculateNumber () {
-      object scalar = new OleDbCommand ("select max (Number) from Budgets", connection).ExecuteScalar ();
+    public static int CalculateNumber (DateTime date) {
+      object scalar = new OleDbCommand ("select max (Number) from Budgets where year([Date]) = " + date.Year, connection).ExecuteScalar ();
       return scalar.GetType () == typeof (DBNull) ? 1 : (int) scalar + 1;
     }
     public void Calculate () {
       Cost = 0;
       Price = 0;
-      foreach (string table in new string [] { "BudgetTemplates", "BudgetArbitraries" }) {
+      foreach (string table in new string [] { "BudgetTemplates", "BudgetEmployeeCategories", "BudgetArbitraries" }) {
         OleDbDataReader dataReader = new OleDbCommand ("select Quantity, Cost, Price from " + table + " where BudgetId = " + Id, connection).ExecuteReader ();
         while (dataReader.Read ()) {
           Cost += dataReader.GetDouble (0) * dataReader.GetDouble (1);
@@ -215,14 +221,14 @@ static class Database {
       return dataReader.HasRows;
     }
     public override string ToString () {
-      return Number.ToString ();
+      return Number + "/" + Date.Year;
     }
     public Budget Update (Budget criteria) {
-      new OleDbCommand ("update Budgets set [Number] = " + criteria.Number + ", ClientId = " + criteria.ClientId + ", [Date] = \"" + Data.Date_Format (criteria.Date) + "\", State = " + criteria.State + " where Id = " + Id, connection).ExecuteNonQuery ();
+      new OleDbCommand ("update Budgets set [Number] = " + criteria.Number + ", ClientId = " + criteria.ClientId + ", [Date] = \"" + Data.Date_Format (criteria.Date) + "\", State = " + criteria.State + ", WarehouseId = " + (criteria.WarehouseId == null ? "null" : criteria.WarehouseId.ToString ()) + " where Id = " + Id, connection).ExecuteNonQuery ();
       return Get (Id);
     }
-    public static bool CheckUnique (Budget excluded, int number) {
-      OleDbDataReader dataReader = new OleDbCommand ("select top 1 Id from Budgets where [Number] = " + number + (excluded != null ? " and not Id = " + excluded.Id : ""), connection).ExecuteReader ();
+    public static bool CheckUnique (Budget excluded, int number, DateTime date) {
+      OleDbDataReader dataReader = new OleDbCommand ("select top 1 Id from Budgets where [Number] = " + number + " and year([Date]) = " + date.Year + (excluded != null ? " and not Id = " + excluded.Id : ""), connection).ExecuteReader ();
       return !dataReader.HasRows;
     }
     public static Budget Create (Budget criteria) {
@@ -251,13 +257,16 @@ static class Database {
       if (month > 0) criteria.Add ("month(Budgets.Date) = " + month);
       if (year > 0) criteria.Add ("year(Budgets.Date) = " + year);
       if (state >= 0) criteria.Add ("state = " + state);
-      return search (String.Join (" and ", criteria.ToArray ()), "Budgets.Number");
+      return search (String.Join (" and ", criteria.ToArray ()), "Budgets.Number, Budgets.Date");
+    }
+    public static List<Budget> Search (int warehouseId, int? state) {
+      return search ("warehouseId = " + warehouseId + (state == null ? "" : " and state = " + state), "Budgets.Number, Budgets.Date");
     }
     public static List<Budget> ListPendant () {
-      return search ("Budgets.State = 0", "Budgets.Number");
+      return search ("Budgets.State = 0", "Budgets.Number, Budgets.Date");
     }
     public static List<Budget> ListAccepted () {
-      return search ("Budgets.State = 1 and Budgets.Id not in (select InvoiceBudgets.BudgetId from InvoiceBudgets)", "Budgets.Number");
+      return search ("Budgets.State >= 2 and Budgets.Id not in (select InvoiceBudgets.BudgetId from InvoiceBudgets)", "Budgets.Number, Budgets.Date");
     }
   }
   public class Client {
@@ -400,6 +409,9 @@ static class Database {
     public bool CheckUsed () {
       return false;
     }
+    public override string ToString () {
+      return Name;
+    }
     public Employee Update (Employee criteria) {
       new OleDbCommand ("update Employees set Name = \"" + escape (criteria.Name) + "\", CategoryId = " + criteria.CategoryId + ", FIN = \"" + escape (criteria.FIN) + "\", SSN = \"" + escape (criteria.SSN) + "\", Address = \"" + escape (criteria.Address) + "\", City = \"" + escape (criteria.City) + "\", Province = \"" + escape (criteria.Province) + "\", ZIP = \"" + escape (criteria.ZIP) + "\", Phone = \"" + escape (criteria.Phone) + "\", Mobile = \"" + escape (criteria.Mobile) + "\", Email = \"" + escape (criteria.Email) + "\", Account = \"" + escape (criteria.Account) + "\", Notes = \"" + escape (criteria.Notes) + "\" where Id = " + Id, connection).ExecuteNonQuery ();
       return Get (Id);
@@ -498,20 +510,22 @@ static class Database {
     }
   }
   public class Invoice {
-    static string source = "Invoices.Id, Invoices.Number, Invoices.ClientId, Clients.Name, Invoices.Date, Invoices.VAT, Invoices.State from Invoices inner join Clients on Invoices.ClientId = Clients.Id";
+    static string source = "Invoices.Id, Invoices.Number, Invoices.ClientId, Clients.Name, Invoices.Date, Invoices.VAT, Invoices.Retention, Invoices.State from Invoices inner join Clients on Invoices.ClientId = Clients.Id";
     public readonly int Id;
     public int Number;
     public int ClientId;
     public readonly string ClientName;
     public DateTime Date;
     public int VAT;
+    public int Retention;
     public int State;
     public double Cost, Price;
-    public Invoice (int number, int clientId, DateTime date, int vat, int state) {
+    public Invoice (int number, int clientId, DateTime date, int vat, int retention, int state) {
       Number = number;
       ClientId = clientId;
       Date = date;
       VAT = vat;
+      Retention = retention;
       State = state;
     }
     public Invoice (OleDbDataReader dataReader) {
@@ -521,10 +535,11 @@ static class Database {
       ClientName = dataReader.GetString (3);
       Date = dataReader.GetDateTime (4);
       VAT = dataReader.GetInt32 (5);
-      State = dataReader.GetInt32 (6);
+      Retention = dataReader.GetInt32 (6);
+      State = dataReader.GetInt32 (7);
     }
-    public static int CalculateNumber () {
-      object scalar = new OleDbCommand ("select max (Number) from Invoices", connection).ExecuteScalar ();
+    public static int CalculateNumber (DateTime date) {
+      object scalar = new OleDbCommand ("select max (Number) from Invoices where year([Date]) = " + date.Year, connection).ExecuteScalar ();
       return scalar.GetType () == typeof (DBNull) ? 1 : (int) scalar + 1;
     }
     public void Calculate () {
@@ -542,15 +557,15 @@ static class Database {
       return false;
     }
     public Invoice Update (Invoice criteria) {
-      new OleDbCommand ("update Invoices set [Number] = " + criteria.Number + ", ClientId = " + criteria.ClientId + ", [Date] = \"" + Data.Date_Format (criteria.Date) + "\", VAT = " + criteria.VAT + ", State = " + criteria.State + " where Id = " + Id, connection).ExecuteNonQuery ();
+      new OleDbCommand ("update Invoices set [Number] = " + criteria.Number + ", ClientId = " + criteria.ClientId + ", [Date] = \"" + Data.Date_Format (criteria.Date) + "\", VAT = " + criteria.VAT + ", Retention = " + criteria.Retention + ", State = " + criteria.State + " where Id = " + Id, connection).ExecuteNonQuery ();
       return Get (Id);
     }
-    public static bool CheckUnique (Invoice excluded, int number) {
-      OleDbDataReader dataReader = new OleDbCommand ("select top 1 Id from Invoices where [Number] = " + number + (excluded != null ? " and not Id = " + excluded.Id : ""), connection).ExecuteReader ();
+    public static bool CheckUnique (Invoice excluded, int number, DateTime date) {
+      OleDbDataReader dataReader = new OleDbCommand ("select top 1 Id from Invoices where [Number] = " + number + " and year([Date]) = " + date.Year + (excluded != null ? " and not Id = " + excluded.Id : ""), connection).ExecuteReader ();
       return !dataReader.HasRows;
     }
     public static Invoice Create (Invoice criteria) {
-      new OleDbCommand ("insert into Invoices ([Number], ClientId, [Date], VAT, State) values (" + criteria.Number + ", " + criteria.ClientId + ", \"" + Data.Date_Format (criteria.Date) + "\", " + criteria.VAT + ", " + criteria.State + ")", connection).ExecuteNonQuery ();
+      new OleDbCommand ("insert into Invoices ([Number], ClientId, [Date], VAT, Retention, State) values (" + criteria.Number + ", " + criteria.ClientId + ", \"" + Data.Date_Format (criteria.Date) + "\", " + criteria.VAT + ", " + criteria.Retention + ", " + criteria.State + ")", connection).ExecuteNonQuery ();
       return Get ((int) new OleDbCommand ("select @@identity", connection).ExecuteScalar ());
     }
     public static void Delete (int id) {
@@ -575,10 +590,10 @@ static class Database {
       if (month > 0) criteria.Add ("month(Invoices.Date) = " + month);
       if (year > 0) criteria.Add ("year(Invoices.Date) = " + year);
       if (state >= 0) criteria.Add ("state = " + state);
-      return search (String.Join (" and ", criteria.ToArray ()), "Invoices.Number");
+      return search (String.Join (" and ", criteria.ToArray ()), "Invoices.Number, Invoices.Date");
     }
     public static List<Invoice> ListPendant () {
-      return search ("Invoices.State = false", "Invoices.Number");
+      return search ("Invoices.State = false", "Invoices.Number, Invoices.Date");
     }
   }
   public class Material {
@@ -940,8 +955,10 @@ static class Database {
       Price = dataReader.GetDouble (4);
     }
     public static void DeleteForBudget (int budgetId) {
+      new OleDbCommand ("delete from BudgetEmployeeCategories where BudgetId = " + budgetId, connection).ExecuteNonQuery ();
       new OleDbCommand ("delete from BudgetTemplates where BudgetId = " + budgetId, connection).ExecuteNonQuery ();
       new OleDbCommand ("delete from BudgetArbitraries where BudgetId = " + budgetId, connection).ExecuteNonQuery ();
+      new OleDbCommand ("delete from BudgetReports where BudgetId = " + budgetId, connection).ExecuteNonQuery ();
     }
     public static void DeleteForInvoice (int invoiceId) {
       new OleDbCommand ("delete from InvoiceBudgets where InvoiceId = " + invoiceId, connection).ExecuteNonQuery ();
@@ -961,11 +978,20 @@ static class Database {
   public class EmployeeCategoryConcept : Concept {
     public EmployeeCategoryConcept (int id, string name, double quantity, double cost, double price) : base (id, name, quantity, cost, price) { }
     public EmployeeCategoryConcept (OleDbDataReader dataReader) : base (dataReader) {}
+    public static List<EmployeeCategoryConcept> GetForBudget (int budgetId) {
+      List<EmployeeCategoryConcept> list = new List<EmployeeCategoryConcept> ();
+      OleDbDataReader dataReader = new OleDbCommand ("select BudgetEmployeeCategories.EmployeeCategoryId, EmployeeCategories.Name, BudgetEmployeeCategories.Quantity, BudgetEmployeeCategories.Cost, BudgetEmployeeCategories.Price from BudgetEmployeeCategories inner join EmployeeCategories on BudgetEmployeeCategories.EmployeeCategoryId = EmployeeCategories.Id where BudgetEmployeeCategories.BudgetId = " + budgetId, connection).ExecuteReader ();
+      while (dataReader.Read ()) list.Add (new EmployeeCategoryConcept (dataReader));
+      return list;
+    }
     public static List<EmployeeCategoryConcept> GetForTemplate (int templateId) {
       List<EmployeeCategoryConcept> list = new List<EmployeeCategoryConcept> ();
       OleDbDataReader dataReader = new OleDbCommand ("select TemplateEmployeeCategories.EmployeeCategoryId, EmployeeCategories.Name, TemplateEmployeeCategories.Quantity, TemplateEmployeeCategories.Cost, TemplateEmployeeCategories.Price from TemplateEmployeeCategories inner join EmployeeCategories on TemplateEmployeeCategories.EmployeeCategoryId = EmployeeCategories.Id where TemplateEmployeeCategories.TemplateId = " + templateId, connection).ExecuteReader ();
       while (dataReader.Read ()) list.Add (new EmployeeCategoryConcept (dataReader));
       return list;
+    }
+    public override void CreateForBudget (int templateId) {
+      new OleDbCommand ("insert into BudgetEmployeeCategories (BudgetId, EmployeeCategoryId, Quantity, Cost, Price) values (" + templateId + ", " + Id + ", \"" + Quantity + "\", \"" + Cost + "\", \"" + Price + "\")", connection).ExecuteNonQuery ();
     }
     public override void CreateForTemplate (int templateId) {
       new OleDbCommand ("insert into TemplateEmployeeCategories (TemplateId, EmployeeCategoryId, Quantity, Cost, Price) values (" + templateId + ", " + Id + ", \"" + Quantity + "\", \"" + Cost + "\", \"" + Price + "\")", connection).ExecuteNonQuery ();
@@ -1056,12 +1082,39 @@ static class Database {
     public BudgetConcept (OleDbDataReader dataReader) : base (dataReader) { }
     public static List<BudgetConcept> GetForInvoice (int invoiceId) {
       List<BudgetConcept> list = new List<BudgetConcept> ();
-      OleDbDataReader dataReader = new OleDbCommand ("select InvoiceBudgets.BudgetId, Budgets.Number & \"\", InvoiceBudgets.Quantity, InvoiceBudgets.Cost, InvoiceBudgets.Price from InvoiceBudgets inner join Budgets on InvoiceBudgets.BudgetId = Budgets.Id where InvoiceBudgets.InvoiceId = " + invoiceId, connection).ExecuteReader ();
+      OleDbDataReader dataReader = new OleDbCommand ("select InvoiceBudgets.BudgetId, Budgets.Number & \"/\" & year(Budgets.Date), InvoiceBudgets.Quantity, InvoiceBudgets.Cost, InvoiceBudgets.Price from InvoiceBudgets inner join Budgets on InvoiceBudgets.BudgetId = Budgets.Id where InvoiceBudgets.InvoiceId = " + invoiceId, connection).ExecuteReader ();
       while (dataReader.Read ()) list.Add (new BudgetConcept (dataReader));
       return list;
     }
     public override void CreateForInvoice (int invoiceId) {
       new OleDbCommand ("insert into InvoiceBudgets (InvoiceId, BudgetId, Quantity, Cost, Price) values (" + invoiceId + ", " + Id + ", 1, \"" + Cost + "\", \"" + Price + "\")", connection).ExecuteNonQuery ();
+    }
+  }
+  public class ReportConcept : Concept {
+    public int Type;
+    public int? EmployeeId;
+    public string EmployeeName;
+    public double EstimatedQuantity;
+    new public double? Quantity;
+    public ReportConcept (int id, int type, string employeeCategoryName, double estimatedQuantity) : base (id, employeeCategoryName, 0, 0, 0) {
+      Type = type;
+      EstimatedQuantity = estimatedQuantity;
+    }
+    public ReportConcept (OleDbDataReader dataReader) : base (dataReader) {
+      Type = dataReader.GetInt32 (5);
+      EmployeeId = dataReader.IsDBNull (6) ? (int?) null : dataReader.GetInt32 (6);
+      EmployeeName = dataReader.IsDBNull (7) ? null : dataReader.GetString (7);
+      EstimatedQuantity = dataReader.GetDouble (8);
+      Quantity = dataReader.IsDBNull (9) ? (double?) null : dataReader.GetDouble (9);
+    }
+    public static List<ReportConcept> GetForBudget (int budgetId) {
+      List<ReportConcept> list = new List<ReportConcept> ();
+      OleDbDataReader dataReader = new OleDbCommand ("select BudgetReports.EmployeeCategoryId, EmployeeCategories.Name, cdbl(0), cdbl(0), cdbl(0), BudgetReports.Type, BudgetReports.EmployeeId, Employees.Name, BudgetReports.EstimatedQuantity, BudgetReports.Quantity from (BudgetReports inner join EmployeeCategories on BudgetReports.EmployeeCategoryId = EmployeeCategories.Id) left join Employees on BudgetReports.EmployeeId = Employees.Id where BudgetReports.BudgetId = " + budgetId, connection).ExecuteReader ();
+      while (dataReader.Read ()) list.Add (new ReportConcept (dataReader));
+      return list;
+    }
+    public override void CreateForBudget (int budgetId) {
+      new OleDbCommand ("insert into BudgetReports (BudgetId, Type, EmployeeCategoryId, EmployeeId, EstimatedQuantity, Quantity) values (" + budgetId + ", " + Type + ", " + Id + ", " + (EmployeeId == null ? "null" : EmployeeId.ToString ()) + ", " + EstimatedQuantity + ", " + (Quantity == null ? "null" : Quantity.ToString ()) + ")", connection).ExecuteNonQuery ();
     }
   }
   public class ReceiptConcept : Concept {
@@ -1094,6 +1147,60 @@ static class Database {
     }
     public override void CreateForInvoice (int invoiceId) {
       new OleDbCommand ("insert into InvoiceReceipts (InvoiceId, Price, [Number], DueDate, PayDate, AccountEntryId) values (" + invoiceId + ", \"" + Price + "\", " + Number + ", \"" + Data.Date_Format (DueDate) + "\", " + (PayDate == null ? "null" : "\"" + Data.Date_Format ((DateTime) PayDate) + "\"") + ", " + (AccountEntryId == null ? "null" : AccountEntryId.ToString ()) + ")", connection).ExecuteNonQuery ();
+    }
+  }
+  public class Warehouse {
+    static string source = "Id, Name from Warehouses";
+    public readonly int Id;
+    public string Name;
+    public Warehouse (string name) {
+      Name = name;
+    }
+    public Warehouse (OleDbDataReader dataReader) {
+      Id = dataReader.GetInt32 (0);
+      Name = dataReader.GetString (1);
+    }
+    public bool CheckUsed () {
+      /*OleDbDataReader dataReader = new OleDbCommand ("select top 1 Id from Materials where CategoryId = " + Id, connection).ExecuteReader ();
+      return dataReader.HasRows;*/
+      return false;
+    }
+    public override string ToString () {
+      return Name;
+    }
+    public Warehouse Update (Warehouse criteria) {
+      new OleDbCommand ("update Warehouses set Name = \"" + escape (criteria.Name) + "\" where Id = " + Id, connection).ExecuteNonQuery ();
+      return Get (Id);
+    }
+    public static bool CheckUnique (Warehouse excluded, string name) {
+      OleDbDataReader dataReader = new OleDbCommand ("select top 1 Id from Warehouses where Name = \"" + escape (name) + "\"" + (excluded != null ? " and not Id = " + excluded.Id : ""), connection).ExecuteReader ();
+      return !dataReader.HasRows;
+    }
+    public static Warehouse Create (Warehouse criteria) {
+      new OleDbCommand ("insert into Warehouses (Name) values (\"" + escape (criteria.Name) + "\")", connection).ExecuteNonQuery ();
+      return Get ((int) new OleDbCommand ("select @@identity", connection).ExecuteScalar ());
+    }
+    public static void Delete (int id) {
+      new OleDbCommand ("delete from Warehouses where Id = " + id, connection).ExecuteNonQuery ();
+    }
+    public static Warehouse Get (int id) {
+      OleDbDataReader dataReader = new OleDbCommand ("select top 1 " + source + " where Id = " + id, connection).ExecuteReader ();
+      if (dataReader.HasRows) {
+        dataReader.Read ();
+        return new Warehouse (dataReader);
+      } else return null;
+    }
+    static List<Warehouse> search (string condition, string order) {
+      List<Warehouse> list = new List<Warehouse> ();
+      OleDbDataReader dataReader = new OleDbCommand ("select " + source + " " + (condition != "" ? " where " + condition : "") + " order by " + order, connection).ExecuteReader ();
+      while (dataReader.Read ()) list.Add (new Warehouse (dataReader));
+      return list;
+    }
+    public static List<Warehouse> List () {
+      return search ("", "Name");
+    }
+    public static List<Warehouse> Search (string name) {
+      return search ("Name like \"%" + escape (name) + "%\"", "Name");
     }
   }
 }

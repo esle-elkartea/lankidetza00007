@@ -55,7 +55,7 @@ class BudgetSearchTabPage : TabPage {
     foreach (string state in Database.BudgetStates) Interface.ComboBox_AddItem (stateComboBox, state, false);
     searchButton = Interface.Button_Create (this, 0, 132, "Buscar", searchButton_Click);
     itemListView = Interface.ListView_Create (this, 0, 172, 0, 0, itemListView_SelectedIndexChanged, itemListView_DoubleClick);
-    Interface.ListView_AddColumnHeader (itemListView, 41, "Número");
+    Interface.ListView_AddColumnHeader (itemListView, 53, "Número");
     Interface.ListView_AddColumnHeader (itemListView, 192, "Cliente");
     Interface.ListView_AddColumnHeader (itemListView, 54, "Fecha");
     Interface.ListView_AddColumnHeader (itemListView, 64, "Estado");
@@ -100,7 +100,7 @@ class BudgetSearchTabPage : TabPage {
     if (clientComboBox.SelectedIndex > 0) clientId = (clientComboBox.SelectedItem as Database.Client).Id;
     int year = yearComboBox.SelectedIndex;
     if (year > 0) year += 2000;
-    foreach (Database.Budget item in Database.Budget.Search (clientId, monthComboBox.SelectedIndex, year, stateComboBox.SelectedIndex - 1)) Interface.ListView_AddListViewItem (itemListView, new string [] { item.Number.ToString (), item.ClientName, Data.Date_Format (item.Date), Database.BudgetStates [item.State] }, item.Id);
+    foreach (Database.Budget item in Database.Budget.Search (clientId, monthComboBox.SelectedIndex, year, stateComboBox.SelectedIndex - 1)) Interface.ListView_AddListViewItem (itemListView, new string [] { item.Number + "/" + item.Date.Year, item.ClientName, Data.Date_Format (item.Date), Database.BudgetStates [item.State] }, item.Id);
     if (itemListView.Items.Count > 0) itemListView.Focus ();
   }
 }

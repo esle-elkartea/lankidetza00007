@@ -91,11 +91,11 @@ class TemplateDetailTabPage : TabPage {
   }
   protected override void OnResize (EventArgs e) {
     base.OnResize (e);
-    statisticsButton.Left = Width - 88;
-    subitemListView.Size = new Size (Width - 96, Height - subitemListView.Top - 96);
-    subitemAddButton.Left = Width - 88;
-    subitemModifyButton.Left = Width - 88;
-    subitemRemoveButton.Left = Width - 88;
+    statisticsButton.Left = Width - 80;
+    subitemListView.Size = new Size (Width - 88, Height - subitemListView.Top - 96);
+    subitemAddButton.Left = Width - 80;
+    subitemModifyButton.Left = Width - 80;
+    subitemRemoveButton.Left = Width - 80;
     costLabel.Top = Height - 88;
     costTextBox.Top = Height - 88;
     priceLabel.Top = Height - 60;

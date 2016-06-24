@@ -43,6 +43,7 @@ class MainForm : Form {
     dropDownButton.DropDownItems.Add ("Categorías de empleado", Interface.Resources.GetImage16 ("EmployeeCategory"), delegate (object o, EventArgs e) { EmployeeCategorySearchTabPage_Open (); });
     dropDownButton.DropDownItems.Add ("Empleados", Interface.Resources.GetImage16 ("Employee"), delegate (object o, EventArgs e) { EmployeeSearchTabPage_Open (); });
     dropDownButton.DropDownItems.Add ("Proveedores", Interface.Resources.GetImage16 ("Provider"), delegate (object o, EventArgs e) { ProviderSearchTabPage_Open (); });
+    dropDownButton.DropDownItems.Add ("Almacenes", Interface.Resources.GetImage16 ("Warehouse"), delegate (object o, EventArgs e) { WarehouseSearchTabPage_Open (); });
     dropDownButton.DropDownItems.Add ("Categorías de material", Interface.Resources.GetImage16 ("MaterialCategory"), delegate (object o, EventArgs e) { MaterialCategorySearchTabPage_Open (); });
     dropDownButton.DropDownItems.Add ("Materiales", Interface.Resources.GetImage16 ("Material"), delegate (object o, EventArgs e) { MaterialSearchTabPage_Open (); });
     dropDownButton.DropDownItems.Add ("Categorías de plantilla", Interface.Resources.GetImage16 ("TemplateCategory"), delegate (object o, EventArgs e) { TemplateCategorySearchTabPage_Open (); });
@@ -289,6 +290,23 @@ class MainForm : Form {
     TabPage tabPage = mainTabControl.TabPages ["templateSearch"];
     if (tabPage != null) mainTabControl.SelectedTab = tabPage;
     else Interface.TabControl_AddTabPage (mainTabControl, new TemplateSearchTabPage ());
+  }
+  public void WarehouseDetailTabPage_Open (int id) {
+    TabPage tabPage = mainTabControl.TabPages ["WarehouseDetail_" + id];
+    if (tabPage != null) mainTabControl.SelectedTab = tabPage;
+    else {
+      tabPage = new WarehouseDetailTabPage (id);
+      if (id > 0 && tabPage.Name == "WarehouseDetail_0") {
+        Interface.ErrorDialog_Show ("El almacén especificado no existe");
+        return;
+      }
+      Interface.TabControl_AddTabPage (mainTabControl, tabPage);
+    }
+  }
+  public void WarehouseSearchTabPage_Open () {
+    TabPage tabPage = mainTabControl.TabPages ["WarehouseSearch"];
+    if (tabPage != null) mainTabControl.SelectedTab = tabPage;
+    else Interface.TabControl_AddTabPage (mainTabControl, new WarehouseSearchTabPage ());
   }
 }
 

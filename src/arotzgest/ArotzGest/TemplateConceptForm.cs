@@ -52,15 +52,15 @@ class TemplateConceptForm : Form {
     descriptionTextBox = Interface.TextBox_Create (this, 136, 124, 255, 4, 65535);
     descriptionTextBox.Text = concept == null ? "" : concept.Description;
     Interface.Label_Create (this, 8,191, "Cantidad");
-    quantityTextBox = Interface.TextBox_Create (this, 136, 191, 27, 1, 5);
+    quantityTextBox = Interface.TextBox_Create (this, 136, 191, 51, 1, 9);
     quantityTextBox.TextAlign = HorizontalAlignment.Right;
     quantityTextBox.Text = concept == null ? "" : Data.Quantity_Format (concept.Quantity);
     Interface.Label_Create (this, 8, 219, "Coste");
-    costTextBox = Interface.TextBox_Create (this, 136, 219, 33, 1, 6);
+    costTextBox = Interface.TextBox_Create (this, 136, 219, 51, 1, 9);
     costTextBox.TextAlign = HorizontalAlignment.Right;
     costTextBox.Text = concept == null ? "" : Data.Double_Format (concept.Cost);
     Interface.Label_Create (this, 8, 247, "Precio");
-    priceTextBox = Interface.TextBox_Create (this, 136, 247, 33, 1, 6);
+    priceTextBox = Interface.TextBox_Create (this, 136, 247, 51, 1, 9);
     priceTextBox.TextAlign = HorizontalAlignment.Right;
     priceTextBox.Text = concept == null ? "" : Data.Double_Format (concept.Price);
     acceptButton = Interface.Button_Create (this, 8, ClientSize.Height - 32, "Aceptar", acceptButton_Click);
@@ -75,13 +75,13 @@ class TemplateConceptForm : Form {
     if (descriptionTextBox.Text == "") errorManager.Add (descriptionTextBox, "La descripción ha de especificarse");
     double? quantity = Data.Double_Parse (quantityTextBox.Text);
     if (quantityTextBox.Text == "") errorManager.Add (quantityTextBox, "La cantidad ha de especificarse");
-    else if (quantity == null || quantity >= 1000) errorManager.Add (quantityTextBox, "La cantidad especificada no es válida");
+    else if (quantity == null || quantity >= 1000000) errorManager.Add (quantityTextBox, "La cantidad especificada no es válida");
     double? cost = Data.Double_Parse (costTextBox.Text);
     if (costTextBox.Text == "") errorManager.Add (costTextBox, "El coste ha de especificarse");
-    else if (cost == null || cost < 0 || cost >= 1000) errorManager.Add (costTextBox, "El coste especificado no es válido");
+    else if (cost == null || cost < 0 || cost >= 1000000) errorManager.Add (costTextBox, "El coste especificado no es válido");
     double? price = Data.Double_Parse (priceTextBox.Text);
     if (priceTextBox.Text == "") errorManager.Add (priceTextBox, "El precio ha de especificarse");
-    else if (price == null || price < 0 || price >= 1000) errorManager.Add (priceTextBox, "El precio especificado no es válido");
+    else if (price == null || price < 0 || price >= 1000000) errorManager.Add (priceTextBox, "El precio especificado no es válido");
     if (errorManager.Controls.Count > 0) {
       errorManager.Controls [0].Focus ();
       return;

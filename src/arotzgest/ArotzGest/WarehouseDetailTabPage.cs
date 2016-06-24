@@ -29,41 +29,60 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-class EmployeeCategoryDetailTabPage : TabPage {
-  bool modifying; 
-  Button acceptButton, cancelButton, deleteButton, modifyButton;
-  Database.EmployeeCategory item;
+class WarehouseDetailTabPage : TabPage {
+  bool modifying;
+  Button acceptButton, budgetDetailButton, cancelButton, deleteButton, modifyButton;
+  Database.Warehouse item;
   Interface.ErrorManager errorManager;
+  ListView itemListView;
   Panel headerPanel;
-  TextBox costTextBox, nameTextBox, priceTextBox;
-  public EmployeeCategoryDetailTabPage (int id) {
+  TabControl statusTabControl;
+  TextBox nameTextBox;
+  public WarehouseDetailTabPage (int id) {
     errorManager = new Interface.ErrorManager ();
     acceptButton = Interface.Button_Create (acceptButton_Click);
-    headerPanel = Interface.HeaderPanel_Create (this, 0, 8, "Client", "", "");
+    headerPanel = Interface.HeaderPanel_Create (this, 0, 8, "Warehouse", "", "");
     Interface.Label_Create (this, 0, 48, "Nombre");
     nameTextBox = Interface.TextBox_Create (this, 128, 48, 128, 1, 255);
-    Interface.Label_Create (this, 0, 76, "Coste / hora");
-    costTextBox = Interface.TextBox_Create (this, 128, 76, 51, 1, 9);
-    costTextBox.TextAlign = HorizontalAlignment.Right;
-    Interface.Label_Create (this, 0, 104, "Precio / hora");
-    priceTextBox = Interface.TextBox_Create (this, 128, 104, 51, 1, 9);
-    priceTextBox.TextAlign = HorizontalAlignment.Right;
+    statusTabControl = Interface.TabControl_Create (this, 0, 84, 130, new string [] { "Terminados", "Todos" }, statusTabControl_SelectedIndexChanged);
+    itemListView = Interface.ListView_Create (this, 0, 116, 0, 0, itemListView_SelectedIndexChanged, itemListView_DoubleClick);
+    Interface.ListView_AddColumnHeader (itemListView, 41, "Número");
+    Interface.ListView_AddColumnHeader (itemListView, 192, "Cliente");
+    Interface.ListView_AddColumnHeader (itemListView, 54, "Fecha");
+    Interface.ListView_AddColumnHeader (itemListView, 64, "Estado");
+    budgetDetailButton = Interface.Button_Create (this, 0, 116, "Detalle", budgetDetailButton_Click);
     modifyButton = Interface.Button_Create (this, 0, 0, "", modifyButton_Click);
     deleteButton = Interface.Button_Create (this, 88, 0, "Borrar", deleteButton_Click);
     cancelButton = Interface.Button_Create (this, 0, 0, "", cancelButton_Click);
-    if (id > 0) item = Database.EmployeeCategory.Get (id);
+    if (id > 0) item = Database.Warehouse.Get (id);
     setModifying (item == null);
   }
   protected override void OnGotFocus (EventArgs e) {
     base.OnGotFocus (e);
-    (Parent.Parent as MainForm).DefaultButtons_Set (acceptButton, cancelButton);
+    (TopLevelControl as MainForm).DefaultButtons_Set (acceptButton, cancelButton);
     (modifying ? nameTextBox as Control : headerPanel).Focus ();
   }
   protected override void OnResize (EventArgs e) {
     base.OnResize (e);
+    statusTabControl.Left = Width - statusTabControl.Width - 86;
+    itemListView.Size = new Size (Width - 88, Height - itemListView.Top - 96);
+    budgetDetailButton.Left = Width - 80;
     modifyButton.Top = Height - 24;
     deleteButton.Top = Height - 24;
     cancelButton.Location = new Point (Width - 80, Height - 24);
+  }
+  void statusTabControl_SelectedIndexChanged (object o, EventArgs e) {
+    setModifying (modifying);
+  }
+  void itemListView_SelectedIndexChanged (object o, EventArgs e) {
+    bool selected = itemListView.SelectedItems.Count > 0;
+    budgetDetailButton.Enabled = selected;
+  }
+  void itemListView_DoubleClick (object o, EventArgs e) {
+    budgetDetailButton.PerformClick ();
+  }
+  void budgetDetailButton_Click (object o, EventArgs e) {
+    (TopLevelControl as MainForm).BudgetDetailTabPage_Open ((int) itemListView.SelectedItems [0].Tag);
   }
   void acceptButton_Click (object o, EventArgs e) {
     if (modifying) modifyButton.PerformClick ();
@@ -73,46 +92,42 @@ class EmployeeCategoryDetailTabPage : TabPage {
     else Parent.Controls.Remove (this);
   }
   void deleteButton_Click (object o, EventArgs e) {
-    if (!Interface.ConfirmationDialog_Show ("Está seguro de que desea borrar la categoría de empleado actual?")) return;
+    if (!Interface.ConfirmationDialog_Show ("Está seguro de que desea borrar la categoría de material actual?")) return;
     if (item.CheckUsed ()) {
-      Interface.ErrorDialog_Show ("La categoría de empleado actual no se puede borrar por que tiene entidades relacionadas");
+      Interface.ErrorDialog_Show ("La categoría de material actual no se puede borrar por que tiene entidades relacionadas");
       return;
     }
-    Database.EmployeeCategory.Delete (item.Id);
+    Database.Warehouse.Delete (item.Id);
     Parent.Controls.Remove (this);
   }
   void modifyButton_Click (object o, EventArgs e) {
     if (modifying) {
       errorManager.Clear ();
       if (nameTextBox.Text == "") errorManager.Add (nameTextBox, "El nombre ha de especificarse");
-      else if (!Database.EmployeeCategory.CheckUnique (item, nameTextBox.Text)) errorManager.Add (nameTextBox, "Ya existe una categoría de empleado con el nombre especificado");
-      double? cost = Data.Double_Parse (costTextBox.Text);
-      if (costTextBox.Text == "") errorManager.Add (costTextBox, "El coste / hora ha de especificarse");
-      else if (cost == null || cost < 0 || cost >= 1000000) errorManager.Add (costTextBox, "El coste / hora especificado no es válido");
-      double? price = Data.Double_Parse (priceTextBox.Text);
-      if (priceTextBox.Text == "") errorManager.Add (priceTextBox, "El precio / hora ha de especificarse");
-      else if (price == null || price < 0 || price >= 1000000) errorManager.Add (priceTextBox, "El precio / hora especificado no es válido");
+      else if (!Database.Warehouse.CheckUnique (item, nameTextBox.Text)) errorManager.Add (nameTextBox, "Ya existe una categoría de material con el nombre especificado");
       if (errorManager.Controls.Count > 0) {
         errorManager.Controls [0].Focus ();
         return;
       }
-      Database.EmployeeCategory criteria = new Database.EmployeeCategory (nameTextBox.Text, (double) cost, (double) price);
-      item = item == null ? Database.EmployeeCategory.Create (criteria) : item.Update (criteria);
+      Database.Warehouse criteria = new Database.Warehouse (nameTextBox.Text);
+      item = item == null ? Database.Warehouse.Create (criteria) : item.Update (criteria);
     }
     setModifying (!modifying);
   }
   void setModifying (bool value) {
     modifying = value;
     if (!modifying) errorManager.Clear ();
-    Name = "employeeCategoryDetail_" + (item == null ? 0 : item.Id);
-    Text = "Categoría de empleado: " + (item == null ? "" : item.Name);
+    Name = "WarehouseDetail_" + (item == null ? 0 : item.Id);
+    Text = "Almacén: " + (item == null ? "" : item.Name);
     Interface.HeaderPanel_SetText (headerPanel, Text, modifying ? item == null ? "Crear" : "Modificar" : "Detalle");
     nameTextBox.ReadOnly = !modifying;
     nameTextBox.Text = item == null ? "" : item.Name;
-    costTextBox.ReadOnly = !modifying;
-    costTextBox.Text = item == null ? "" : Data.Double_Format (item.Cost);
-    priceTextBox.ReadOnly = !modifying;
-    priceTextBox.Text = item == null ? "" : Data.Double_Format (item.Price);
+    itemListView.Enabled = !modifying;
+    if (item != null && !modifying) {
+      Interface.ListView_Clear (itemListView);
+      foreach (Database.Budget budget in Database.Budget.Search (item.Id, statusTabControl.SelectedIndex <= 0 ? 3 : (int?)null)) Interface.ListView_AddListViewItem (itemListView, new string [] { budget.Number.ToString (), budget.ClientName, Data.Date_Format (budget.Date), Database.BudgetStates [budget.State] }, budget.Id);
+    }
+    budgetDetailButton.Enabled = false;
     modifyButton.Text = modifying ? "Aceptar" : "Modificar";
     deleteButton.Enabled = item != null;
     cancelButton.Text = modifying ? "Cancelar" : "Cerrar";
